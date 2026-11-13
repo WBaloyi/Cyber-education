@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Admin dashboard | Cyber Education{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% macro testimonial_action(item, action, label, style='btn-outline-primary') %}
+    <form action="{{ url_for('admin_testimonial', testimonial_id=item.id, action=action) }}" method="POST" class="admin-inline-form"
+          {% if action == 'delete' %}onsubmit="return confirm('Delete this testimonial permanently?')"{% endif %}>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-sm {{ style }}">{{ label }}<span class="visually-hidden"> testimonial from {{ item.name }}</span></button>
+    </form>
+{% endmacro %}
+
+{% macro stars(rating) %}{% if rating %}<span class="testimonial-rating" aria-label="{{ rating }} out of 5 stars">{{ '★' * rating }}{{ '☆' * (5 - rating) }}</span>{% else %}<span class="text-muted">No rating</span>{% endif %}{% endmacro %}
+
+{% block content %}
+    <section class="admin-section fade-in">
+        <div class="admin-head">
+            <div>
+                <p class="eyebrow">Staff only</p>
+                <h1>Admin dashboard</h1>
+            </div>
+            <form action="{{ url_for('admin_logout') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline-primary">Sign out</button>
+            </form>
+        </div>
+        <nav class="page-links" aria-label="Dashboard sections">
+            <a class="a1" href="#testimonials">Testimonials ({{ pending | length }} waiting)</a>
+            <a class="a1" href="#enrollments">Enrollments ({{ enrollments | length }})</a>
+            <a class="a1" href="#messages">Contact messages ({{ submissions | length }})</a>
+        </nav>
+    </section>
+
+    <section class="admin-section" id="testimonials">
+        <h2>Testimonials waiting for approval</h2>
+        {% if pending %}
+        <div class="admin-cards">
+            {% for item in pending %}
+            <article class="admin-card">
+                <p class="admin-card-meta"><strong>{{ item.name }}</strong> · {{ stars(item.rating) }} · {{ item.created_at[:16] }}</p>
+                <p class="admin-card-text">{{ item.message }}</p>
+                <div class="admin-actions">
+                    {{ testimonial_action(item, 'approve', 'Approve', 'btn-primary') }}
+                    {{ testimonial_action(item, 'delete', 'Delete', 'btn-outline-danger') }}
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>Nothing waiting. New testimonials will appear here before they go live.</p>
+        {% endif %}
+
+        <h2 class="mt-5">Published testimonials</h2>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th scope="col">Name</th><th scope="col">Rating</th><th scope="col">Testimonial</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+                <tbody>
+                    {% for item in published %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ stars(item.rating) }}</td>
+                        <td>{{ item.message }}</td>
+                        <td class="admin-actions">
+                            {{ testimonial_action(item, 'hide', 'Unpublish') }}
+                            {{ testimonial_action(item, 'delete', 'Delete', 'btn-outline-danger') }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="admin-section" id="enrollments">
+        <h2>Enrollments</h2>
+        <div class="admin-intakes">
+            {% for item in courses %}
+            <div class="admin-intake">
+                <strong>{{ item.title }}</strong>
+                {% for intake in item.upcoming_intakes %}
+                <span>{{ intake.start | nice_date }}: {{ intake.capacity - intake.spots_left }} / {{ intake.capacity }}</span>
+                {% else %}
+                <span>No upcoming start dates</span>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% if enrollments %}
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th scope="col">Course</th><th scope="col">Start date</th><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Enrolled on</th></tr></thead>
+                <tbody>
+                    {% for item in enrollments %}
+                    <tr>
+                        <td>{{ titles.get(item.course_slug, item.course_slug) }}</td>
+                        <td>{{ item.intake_date | nice_date }}</td>
+                        <td>{{ item.name }}</td>
+                        <td><a href="mailto:{{ item.email }}">{{ item.email }}</a></td>
+                        <td>{{ item.created_at[:10] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>No enrollments yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="admin-section" id="messages">
+        <h2>Contact messages</h2>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Course</th><th scope="col">Message</th><th scope="col">Received</th></tr></thead>
+                <tbody>
+                    {% for item in submissions %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td><a href="mailto:{{ item.email }}">{{ item.email }}</a></td>
+                        <td>{{ item.course_of_interest }}</td>
+                        <td>{{ item.message }}</td>
+                        <td>{{ item.created_at[:10] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

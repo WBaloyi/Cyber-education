@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Compare courses | Cyber Education{% endblock %}
+{% block description %}Compare two Cyber Education courses side by side.{% endblock %}
+
+{% macro course_select(name, label, selected) %}
+    <div class="col-12 col-md-5">
+        <label for="compare-{{ name }}" class="form-label">{{ label }}</label>
+        <select class="form-select" id="compare-{{ name }}" name="{{ name }}">
+            {% for item in courses %}
+            <option value="{{ item.slug }}" {% if item.slug == selected.slug %}selected{% endif %}>{{ item.title }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endmacro %}
+
+{% block content %}
+    <section class="compare-section fade-in">
+        <p class="eyebrow">Side by side</p>
+        <h1>Compare courses</h1>
+        <p class="lead">Pick two courses to see how they differ.</p>
+
+        <form class="course-filters compare-picker row g-3 align-items-end" method="GET" action="{{ url_for('compare') }}">
+            {{ course_select('a', 'First course', first) }}
+            {{ course_select('b', 'Second course', second) }}
+            <div class="col-12 col-md-2"><button type="submit" class="btn btn-primary w-100">Compare</button></div>
+        </form>
+
+        <div class="compare-table-wrap">
+            <table class="compare-table">
+                <caption class="visually-hidden">{{ first.title }} compared with {{ second.title }}</caption>
+                <thead>
+                    <tr>
+                        <td></td>
+                        {% for item in [first, second] %}
+                        <th scope="col">
+                            <img src="{{ item.image }}" alt="">
+                            <span>{{ item.title }}</span>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><th scope="row">Duration</th><td>{{ first.duration_text }}</td><td>{{ second.duration_text }}</td></tr>
+                    <tr><th scope="row">Delivery</th><td>{{ first.delivery }}</td><td>{{ second.delivery }}</td></tr>
+                    {% for index in range(first.details | length) %}
+                    {% set label = first.details[index][0] %}
+                    {% if label != 'Mode of delivery:' %}
+                    <tr>
+                        <th scope="row">{{ label | replace(':', '') or 'Details' }}</th>
+                        <td>{{ first.details[index][1] }}</td>
+                        <td>{% for other_label, value in second.details if other_label == label %}{{ value }}{% endfor %}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    <tr><th scope="row">About</th><td>{{ first.description }}</td><td>{{ second.description }}</td></tr>
+                    <tr>
+                        <th scope="row">Next start</th>
+                        {% for item in [first, second] %}
+                        <td>
+                            {% if item.next_intake %}
+                            <strong>{{ item.next_intake.start | nice_date }}</strong><br>{{ item.next_intake.spots_left }} {{ 'spot' if item.next_intake.spots_left == 1 else 'spots' }} left
+                            {% else %}No open start dates{% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td></td>
+                        {% for item in [first, second] %}
+                        <td>
+                            {% if item.next_intake %}
+                            <a class="btn btn-primary" href="{{ url_for('enroll', slug=item.slug) }}">Enroll in {{ item.title }}</a>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

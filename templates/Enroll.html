@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Enroll in {{ course.title }} | Cyber Education{% endblock %}
+{% block description %}Choose a start date and enroll in {{ course.title }} at Cyber Education.{% endblock %}
+
+{% block content %}
+    <div class="enroll-grid fade-in">
+        <section class="enroll-course">
+            <img src="{{ course.image }}" alt="{{ course.title }} course">
+            <div class="enroll-course-body">
+                <p class="course-tile-duration">{{ course.duration_text }} · {{ course.delivery }}</p>
+                <h2>{{ course.title }}</h2>
+                <p>{{ course.description }}</p>
+                <ul class="course-meta">
+                    {% for label, value in course.details %}
+                    <li>{% if label %}<strong>{{ label }}</strong> {% endif %}{{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+
+        <section class="enroll-form-section">
+            <p class="eyebrow">Enrollment</p>
+            <h1>Enroll in {{ course.title }}</h1>
+
+            {% if enrolled_label %}
+            <p class="form-status" role="status">You're enrolled! Your {{ course.title }} course starts on {{ enrolled_label }}. We'll be in touch with next steps.</p>
+            <p><a href="{{ url_for('course') }}">&larr; Back to all courses</a></p>
+            {% elif not course.upcoming_intakes %}
+            <p>There are no upcoming start dates for this course right now. <a href="{{ url_for('contact', course=course.title) }}">Ask us</a> about the next one.</p>
+            {% else %}
+            <form action="{{ url_for('enroll', slug=course.slug) }}" method="POST" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-trap" aria-hidden="true">
+                    <label for="website">Leave this field empty</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
+                <fieldset class="mb-3" aria-describedby="intake-error">
+                    <legend class="form-label">Choose a start date</legend>
+                    <div class="intake-options">
+                        {% for intake in course.upcoming_intakes %}
+                        <label class="intake-option{{ ' is-full' if intake.full }}">
+                            <input type="radio" name="intake" value="{{ intake.start }}" required
+                                   {% if intake.full %}disabled{% endif %}
+                                   {% if values.intake == intake.start or (not values.intake and intake == course.next_intake) %}checked{% endif %}>
+                            <span class="intake-date">{{ intake.start | nice_date }}</span>
+                            <span class="intake-spots">{% if intake.full %}Full{% else %}{{ intake.spots_left }} of {{ intake.capacity }} {{ 'spot' if intake.spots_left == 1 else 'spots' }} left{% endif %}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <span class="error" id="intake-error">{{ errors.intake }}</span>
+                </fieldset>
+
+                <div class="mb-3">
+                    <label for="enroll-name" class="form-label">Full name</label>
+                    <input type="text" class="form-control" id="enroll-name" name="name" autocomplete="name" required maxlength="100"
+                           value="{{ values.name }}" {% if errors.name %}aria-invalid="true"{% endif %} aria-describedby="enroll-name-error">
+                    <span class="error" id="enroll-name-error">{{ errors.name }}</span>
+                </div>
+                <div class="mb-3">
+                    <label for="enroll-email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="enroll-email" name="email" autocomplete="email" required maxlength="254"
+                           value="{{ values.email }}" {% if errors.email %}aria-invalid="true"{% endif %} aria-describedby="enroll-email-error">
+                    <span class="error" id="enroll-email-error">{{ errors.email }}</span>
+                </div>
+                <button type="submit" class="btn btn-primary">Confirm enrollment</button>
+            </form>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

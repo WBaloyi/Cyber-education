@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Analytics Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+<style>
+  /* Horizontal bar chart: single series, brand blue, thin bars with 4px rounded data ends. */
+  .bars { display:grid; gap:10px; }
+  .bar-row { display:grid; grid-template-columns: 130px 1fr 52px; align-items:center; gap:10px; font-size:13px; }
+  .bar-track { height:14px; background:transparent; border-left:1px solid #c9d3e2; position:relative; }
+  .bar-track i { position:absolute; left:0; top:0; height:100%; background:var(--brand); border-radius:0 4px 4px 0; }
+  .bar-row:hover i { background:var(--brand-dark); }
+  /* Column chart */
+  .cols { display:flex; align-items:flex-end; gap:2px; height:160px; border-bottom:1px solid #c9d3e2; padding:0 4px; }
+  .cols div { flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%; }
+  .cols i { width:60%; max-width:34px; background:var(--brand); border-radius:4px 4px 0 0; }
+  .cols div:hover i { background:var(--brand-dark); }
+  .col-labels { display:flex; gap:2px; padding:4px 4px 0; font-size:12px; color:var(--muted); }
+  .col-labels span { flex:1; text-align:center; }
+  /* Heatmap: sequential, one hue light -> dark */
+  .heat td { text-align:center; font-weight:700; border:2px solid #fff; border-radius:6px; }
+  .s1 { background:#e9f0fb; color:var(--ink); } .s2 { background:#bcd0f0; color:var(--ink); }
+  .s3 { background:#7fa3df; color:#08162e; } .s4 { background:#3d6cbe; color:#fff; } .s5 { background:#14336b; color:#fff; }
+  .legend-scale { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); margin-top:10px; flex-wrap:wrap; }
+  .legend-scale i { width:28px; height:12px; border-radius:3px; display:inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; All suggestions</a>
+  <p class="eyebrow">Suggestion 4</p>
+  <h1>Admin analytics and export</h1>
+  <p class="lead">Help the admin see how full each quarter is and which courses are growing, then export the list.</p>
+  <div class="why"><strong>Why add it</strong>
+    <ul>
+      <li>The dashboard shows enrollments as one long table, which is hard to plan capacity from.</li>
+      <li>CSV export makes it easy to email class lists to lecturers.</li>
+      <li>Build: a few <code>GROUP BY</code> queries on <code>enrollments</code>. Charts can be plain HTML/CSS (as here) or Chart.js.</li>
+    </ul>
+  </div>
+
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup A</span><h2>Overview: stat tiles and fill rate</h2><p>Headline numbers, then how full the next quarter is per course.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/admin/analytics</span></div>
+      <div class="frame-body">
+        <div class="row"><h2>Analytics</h2><select aria-label="Quarter"><option>Next quarter: 1 Jan 2027</option></select></div>
+        <div class="grid g4" style="margin-top:14px">
+          <div class="card"><p class="small muted" style="margin:0">Enrollments, 1 Jan 2027</p><div class="stat">74</div><p class="small" style="margin:0;color:var(--good)">▲ 12 vs Q4 2026</p></div>
+          <div class="card"><p class="small muted" style="margin:0">Seats filled</p><div class="stat">57%</div><p class="small muted" style="margin:0">74 of 130</p></div>
+          <div class="card"><p class="small muted" style="margin:0">Full start dates</p><div class="stat">1</div><p class="small muted" style="margin:0">Cyber security</p></div>
+          <div class="card"><p class="small muted" style="margin:0">On waitlists</p><div class="stat">4</div><p class="small muted" style="margin:0">across 1 course</p></div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>Seats filled per course, 1 Jan 2027</h3>
+          <div class="bars" style="margin-top:12px">
+            <div class="bar-row" title="Cyber security: 20 of 20 seats (100%)"><span>Cyber security</span><div class="bar-track"><i style="width:100%"></i></div><b>100%</b></div>
+            <div class="bar-row" title="Web development: 23 of 25 seats (92%)"><span>Web development</span><div class="bar-track"><i style="width:92%"></i></div><b>92%</b></div>
+            <div class="bar-row" title="Data Science: 11 of 20 seats (55%)"><span>Data Science</span><div class="bar-track"><i style="width:55%"></i></div><b>55%</b></div>
+            <div class="bar-row" title="Machine Learning: 18 of 30 seats (60%)"><span>Machine Learning</span><div class="bar-track"><i style="width:60%"></i></div><b>60%</b></div>
+            <div class="bar-row" title="Python: 8 of 35 seats (23%)"><span>Python</span><div class="bar-track"><i style="width:23%"></i></div><b>23%</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup B</span><h2>Enrollment list with filters and CSV export</h2><p>Trend over quarters on top; filterable class list below.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/admin/enrollments</span></div>
+      <div class="frame-body">
+        <div class="card">
+          <h3>Enrollments per quarter, all courses</h3>
+          <div class="cols" style="margin-top:12px">
+            <div title="1 Jan 2026: 41"><i style="height:41%"></i></div>
+            <div title="1 Apr 2026: 48"><i style="height:48%"></i></div>
+            <div title="1 Jul 2026: 55"><i style="height:55%"></i></div>
+            <div title="1 Oct 2026: 62"><i style="height:62%"></i></div>
+            <div title="1 Jan 2027: 74 (so far)"><i style="height:74%"></i></div>
+          </div>
+          <div class="col-labels"><span>Q1 26</span><span>Q2 26</span><span>Q3 26</span><span>Q4 26</span><span>Q1 27</span></div>
+        </div>
+        <div class="row" style="margin-top:16px;justify-content:flex-start">
+          <select aria-label="Course"><option>All courses</option></select>
+          <select aria-label="Start date"><option>1 Jan 2027</option></select>
+          <input placeholder="Search name or email" aria-label="Search">
+          <a class="btn" href="#" style="margin-left:auto">Export CSV</a>
+        </div>
+        <div class="table-wrap" style="margin-top:12px">
+          <table style="min-width:560px">
+            <thead><tr><th>Name</th><th>Email</th><th>Course</th><th>Start</th><th>Enrolled on</th></tr></thead>
+            <tbody>
+              <tr><td>Thandi Mokoena</td><td>thandi@example.com</td><td>Python</td><td>1 Jan 2027</td><td>14 Nov 2026</td></tr>
+              <tr><td>Kenji Tanaka</td><td>kenji@example.com</td><td>Cyber security</td><td>1 Jan 2027</td><td>12 Nov 2026</td></tr>
+              <tr><td>Abigail Brown</td><td>abigail@example.com</td><td>Data Science</td><td>1 Jan 2027</td><td>9 Nov 2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup C</span><h2>Capacity heatmap</h2><p>Courses × quarters, darker = fuller. Spot where to add seats or a second class.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/admin/capacity</span></div>
+      <div class="frame-body">
+        <h2>Seats filled by quarter</h2>
+        <div class="table-wrap" style="margin-top:12px">
+          <table class="heat" style="min-width:560px">
+            <thead><tr><th>Course</th><th>1 Jan 27</th><th>1 Apr 27</th><th>1 Jul 27</th><th>1 Oct 27</th></tr></thead>
+            <tbody>
+              <tr><th style="text-transform:none;font-size:14px;color:var(--ink)">Cyber security</th><td class="s5" title="20 of 20">100%</td><td class="s4" title="17 of 20">85%</td><td class="s1" title="2 of 20">10%</td><td class="s1" title="0 of 20">0%</td></tr>
+              <tr><th style="text-transform:none;font-size:14px;color:var(--ink)">Web development</th><td class="s5" title="23 of 25">92%</td><td class="s2" title="4 of 25">16%</td><td class="s1" title="0 of 25">0%</td><td class="s1" title="0 of 25">0%</td></tr>
+              <tr><th style="text-transform:none;font-size:14px;color:var(--ink)">Machine Learning</th><td class="s3" title="18 of 30">60%</td><td class="s2" title="6 of 30">20%</td><td class="s1" title="1 of 30">3%</td><td class="s1" title="0 of 30">0%</td></tr>
+              <tr><th style="text-transform:none;font-size:14px;color:var(--ink)">Data Science</th><td class="s3" title="11 of 20">55%</td><td class="s2" title="5 of 20">25%</td><td class="s1" title="0 of 20">0%</td><td class="s1" title="0 of 20">0%</td></tr>
+              <tr><th style="text-transform:none;font-size:14px;color:var(--ink)">Python</th><td class="s2" title="8 of 35">23%</td><td class="s1" title="3 of 35">9%</td><td class="s1" title="0 of 35">0%</td><td class="s1" title="0 of 35">0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="legend-scale">Seats filled: <i class="s1"></i>0–19% <i class="s2"></i>20–39% <i class="s3"></i>40–69% <i class="s4"></i>70–89% <i class="s5"></i>90–100%</div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

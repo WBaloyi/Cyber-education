@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Admin sign in | Cyber Education{% endblock %}
+{% block head %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+    <section class="admin-login fade-in">
+        <p class="eyebrow">Staff only</p>
+        <h1>Admin sign in</h1>
+        <form action="{{ url_for('admin_login') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ next_page }}">
+            <div class="mb-3">
+                <label for="admin-password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="admin-password" name="password" autocomplete="current-password" required
+                       {% if error %}aria-invalid="true"{% endif %} aria-describedby="admin-password-error">
+                <span class="error" id="admin-password-error" role="alert">{{ error }}</span>
+            </div>
+            <button type="submit" class="btn btn-primary">Sign in</button>
+        </form>
+    </section>
+{% endblock %}

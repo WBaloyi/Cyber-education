@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Course quiz | Cyber Education{% endblock %}
+{% block description %}Answer six quick questions to find the Cyber Education course that suits you best.{% endblock %}
+
+{% block content %}
+    <section class="quiz-section fade-in">
+        <p class="eyebrow">Course finder</p>
+        <h1>Which course suits you?</h1>
+        <p class="lead">Answer six quick questions and we'll match you with the course that fits your interests, experience and schedule.</p>
+
+        <div class="quiz-saved" id="quiz-saved" hidden>
+            <p><strong>Your saved result:</strong> <a id="quiz-saved-link" href="#"></a> <span id="quiz-saved-date"></span></p>
+            <button type="button" class="btn btn-link" id="quiz-saved-clear">Clear</button>
+        </div>
+
+        <div id="quiz-area">
+            <div class="quiz-progress" aria-hidden="true"><span id="quiz-progress-bar"></span></div>
+            <p class="quiz-step-label" id="quiz-step-label">Question 1 of 6</p>
+
+            <!-- Each option's value lists the points it adds: ml = Machine Learning, wd = Web development,
+                 cs = Cyber security, ds = Data Science, py = Python -->
+            <form id="quiz-form" novalidate>
+                <fieldset class="quiz-step" data-step>
+                    <legend tabindex="-1">Which of these excites you most?</legend>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="ml:3,ds:1"><span>Teaching computers to learn from data</span></label>
+                        <label><input type="radio" name="q1" value="wd:3"><span>Building websites and web apps</span></label>
+                        <label><input type="radio" name="q1" value="cs:3"><span>Protecting systems and data from attackers</span></label>
+                        <label><input type="radio" name="q1" value="ds:3,ml:1"><span>Finding insights hidden in data</span></label>
+                        <label><input type="radio" name="q1" value="py:3,wd:1"><span>Writing my very first programs</span></label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="quiz-step" data-step data-experience>
+                    <legend tabindex="-1">How much programming experience do you have?</legend>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="py:3,wd:2,cs:-1,ds:-2,ml:-1" data-beginner><span>None yet</span></label>
+                        <label><input type="radio" name="q2" value="wd:2,py:1,cs:1"><span>A little — I've tried HTML or some basic code</span></label>
+                        <label><input type="radio" name="q2" value="ds:2,ml:2"><span>I'm comfortable with Python or R</span></label>
+                        <label><input type="radio" name="q2" value="cs:2,ml:1"><span>I know computer science fundamentals</span></label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="quiz-step" data-step>
+                    <legend tabindex="-1">Which task sounds the most fun?</legend>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q3" value="wd:3"><span>Designing a page layout that looks great</span></label>
+                        <label><input type="radio" name="q3" value="cs:3"><span>Investigating how a hacker got into a system</span></label>
+                        <label><input type="radio" name="q3" value="ds:3"><span>Building a dashboard full of charts</span></label>
+                        <label><input type="radio" name="q3" value="ml:3"><span>Training a model to recognise patterns</span></label>
+                        <label><input type="radio" name="q3" value="py:3"><span>Automating a boring task with a script</span></label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="quiz-step" data-step>
+                    <legend tabindex="-1">How do you prefer to learn?</legend>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="cs:1,ds:1"><span>At my own pace (self-paced)</span></label>
+                        <label><input type="radio" name="q4" value="ml:1,wd:1,py:1"><span>With an instructor setting the pace</span></label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="quiz-step" data-step>
+                    <legend tabindex="-1">How much time can you commit?</legend>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="ml:1,cs:1"><span>About 12 weeks</span></label>
+                        <label><input type="radio" name="q5" value="wd:1,py:1"><span>About 16 weeks</span></label>
+                        <label><input type="radio" name="q5" value="ds:1"><span>18 weeks or more</span></label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="quiz-step" data-step>
+                    <legend tabindex="-1">What is your main goal?</legend>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q6" value="py:2,wd:2"><span>Start a tech career from scratch</span></label>
+                        <label><input type="radio" name="q6" value="ml:3"><span>Work in artificial intelligence</span></label>
+                        <label><input type="radio" name="q6" value="ds:3"><span>Become a data analyst or data scientist</span></label>
+                        <label><input type="radio" name="q6" value="cs:3"><span>Work in IT security</span></label>
+                        <label><input type="radio" name="q6" value="wd:3"><span>Build my own websites or products</span></label>
+                    </div>
+                </fieldset>
+
+                <p class="error quiz-error" id="quiz-error" role="alert"></p>
+
+                <div class="quiz-nav">
+                    <button type="button" class="btn btn-outline-primary" id="quiz-back">Back</button>
+                    <button type="submit" class="btn btn-primary" id="quiz-next">Next</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="quiz-result" class="quiz-result" hidden tabindex="-1" aria-live="polite"></div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        (() => {
+            const COURSE_KEYS = {
+                ml: 'Machine Learning',
+                wd: 'Web development',
+                cs: 'Cyber security',
+                ds: 'Data Science',
+                py: 'Python'
+            };
+
+            const form = document.getElementById('quiz-form');
+            const steps = [...form.querySelectorAll('[data-step]')];
+            const backButton = document.getElementById('quiz-back');
+            const nextButton = document.getElementById('quiz-next');
+            const stepLabel = document.getElementById('quiz-step-label');
+            const progressBar = document.getElementById('quiz-progress-bar');
+            const errorMessage = document.getElementById('quiz-error');
+            const quizArea = document.getElementById('quiz-area');
+            const result = document.getElementById('quiz-result');
+            let current = 0;
+            const courses = {{ courses | tojson }};
+            const SAVE_KEY = 'cyberEducationQuizResult';
+
+
+            const saveResult = value => {
+                try {
+                    localStorage.setItem(SAVE_KEY, JSON.stringify(value));
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            };
+            const readSaved = () => {
+                try {
+                    return JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+                } catch (error) {
+                    return null;
+                }
+            };
+            const savedBox = document.getElementById('quiz-saved');
+            const showSaved = () => {
+                const saved = readSaved();
+                if (!saved || !saved.slug) {
+                    savedBox.hidden = true;
+                    return;
+                }
+                const link = document.getElementById('quiz-saved-link');
+                link.textContent = saved.title;
+                link.href = `/courses#${saved.slug}`;
+                const savedOn = new Date(saved.savedAt);
+                document.getElementById('quiz-saved-date').textContent = Number.isNaN(savedOn.getTime())
+                    ? '' : `(saved ${savedOn.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })})`;
+                savedBox.hidden = false;
+            };
+            document.getElementById('quiz-saved-clear').addEventListener('click', () => {
+                try { localStorage.removeItem(SAVE_KEY); } catch (error) { /* storage unavailable */ }
+                showSaved();
+            });
+            showSaved();
+
+            const showStep = (index, moveFocus) => {
+                current = index;
+                steps.forEach((step, stepIndex) => { step.hidden = stepIndex !== index; });
+                stepLabel.textContent = `Question ${index + 1} of ${steps.length}`;
+                progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
+                backButton.hidden = index === 0;
+                nextButton.textContent = index === steps.length - 1 ? 'See my result' : 'Next';
+                errorMessage.textContent = '';
+                if (moveFocus) steps[index].querySelector('legend').focus();
+            };
+
+            const selected = step => step.querySelector('input:checked');
+
+            const scoreAnswers = () => {
+                const scores = { ml: 0, wd: 0, cs: 0, ds: 0, py: 0 };
+                steps.forEach(step => {
+                    selected(step).value.split(',').forEach(part => {
+                        const [key, points] = part.split(':');
+                        scores[key] += Number(points);
+                    });
+                });
+                // Highest score wins; ties go to the course picked in question 1.
+                const firstPick = selected(steps[0]).value.split(',')[0].split(':')[0];
+                return Object.keys(scores).sort((a, b) =>
+                    scores[b] - scores[a] || (b === firstPick) - (a === firstPick));
+            };
+
+            const reasonsFor = key => steps
+                .map(step => selected(step))
+                .filter(input => input.value.split(',').some(part => {
+                    const [optionKey, points] = part.split(':');
+                    return optionKey === key && Number(points) > 0;
+                }))
+                .map(input => input.nextElementSibling.textContent);
+
+            const element = (tag, className, text) => {
+                const node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text) node.textContent = text;
+                return node;
+            };
+
+            const showResult = () => {
+                const [bestKey, runnerUpKey] = scoreAnswers();
+                const title = COURSE_KEYS[bestKey];
+                const course = courses.find(item => item.title === title) || { title };
+                const slug = course.slug || '';
+
+                const card = element('article', 'quiz-result-card');
+                if (course.image) {
+                    const image = element('img', 'quiz-result-img');
+                    image.src = course.image;
+                    image.alt = `${title} course`;
+                    card.appendChild(image);
+                }
+                const body = element('div', 'quiz-result-body');
+                body.append(element('p', 'eyebrow', 'Your best match'), element('h2', '', title));
+                if (course.duration || course.modeOfDelivery) {
+                    const facts = [course.duration, course.modeOfDelivery]
+                        .filter(Boolean)
+                        .map(text => text.split(':').slice(1).join(':').trim() || text);
+                    body.appendChild(element('p', 'quiz-result-facts', facts.join(' · ')));
+                }
+                if (course.description) body.appendChild(element('p', 'quiz-result-description', course.description));
+
+                const reasons = reasonsFor(bestKey);
+                if (reasons.length) {
+                    body.appendChild(element('h3', 'quiz-result-subhead', 'Why we picked it'));
+                    const list = element('ul', 'quiz-result-reasons');
+                    reasons.forEach(reason => list.appendChild(element('li', '', reason)));
+                    body.appendChild(list);
+                }
+
+                const isBeginner = Boolean(form.querySelector('[data-beginner]:checked'));
+                if (isBeginner && course.prerequisite && !/none/i.test(course.prerequisite)) {
+                    body.appendChild(element('p', 'quiz-result-note',
+                        `${course.prerequisite} You may want to start with our Python course first.`));
+                }
+
+                const actions = element('div', 'quiz-result-actions');
+                const viewLink = element('a', 'btn btn-primary', 'View this course');
+                viewLink.href = `/courses#${slug}`;
+                const askLink = element('a', 'btn btn-outline-primary', 'Ask us about it');
+                askLink.href = `/contact?course=${encodeURIComponent(title)}`;
+                const retake = element('button', 'btn btn-link quiz-retake', 'Retake the quiz');
+                retake.type = 'button';
+                retake.addEventListener('click', () => {
+                    form.reset();
+                    result.hidden = true;
+                    result.replaceChildren();
+                    quizArea.hidden = false;
+                    showStep(0, true);
+                });
+                const runnerUp = courses.find(item => item.title === COURSE_KEYS[runnerUpKey]);
+                const compareLink = element('a', 'btn btn-outline-primary', `Compare with ${COURSE_KEYS[runnerUpKey]}`);
+                compareLink.href = `/compare?a=${slug}&b=${runnerUp ? runnerUp.slug : ''}`;
+                const saveButton = element('button', 'btn btn-outline-primary', 'Save this result');
+                saveButton.type = 'button';
+                saveButton.addEventListener('click', () => {
+                    if (saveResult({ title, slug, savedAt: new Date().toISOString() })) {
+                        saveButton.textContent = 'Saved ✓';
+                        saveButton.disabled = true;
+                        showSaved();
+                    } else {
+                        saveButton.textContent = 'Could not save in this browser';
+                    }
+                });
+                actions.append(viewLink, compareLink, askLink, saveButton, retake);
+                body.appendChild(actions);
+
+                if (runnerUp) {
+                    const alsoConsider = element('p', 'quiz-result-also', 'Also worth a look: ');
+                    const runnerUpLink = element('a', '', runnerUp.title);
+                    runnerUpLink.href = `/courses#${runnerUp.slug}`;
+                    alsoConsider.appendChild(runnerUpLink);
+                    body.appendChild(alsoConsider);
+                }
+
+                card.appendChild(body);
+                result.replaceChildren(card);
+                quizArea.hidden = true;
+                result.hidden = false;
+                result.focus();
+            };
+
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                if (!selected(steps[current])) {
+                    errorMessage.textContent = 'Please choose an answer to continue.';
+                    steps[current].querySelector('input').focus();
+                    return;
+                }
+                if (current < steps.length - 1) showStep(current + 1, true);
+                else showResult();
+            });
+
+            form.addEventListener('change', () => { errorMessage.textContent = ''; });
+            backButton.addEventListener('click', () => showStep(current - 1, true));
+
+            showStep(0, false);
+        })();
+    </script>
+{% endblock %}

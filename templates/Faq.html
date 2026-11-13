@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ | Cyber Education{% endblock %}
+{% block description %}Answers to the questions learners ask Cyber Education most often.{% endblock %}
+
+{% macro question(id, text, open=False) %}
+    <details class="faq-item" id="{{ id }}" {% if open %}open{% endif %}>
+        <summary>{{ text }}</summary>
+        <div class="faq-answer">{{ caller() }}</div>
+    </details>
+{% endmacro %}
+
+{% block content %}
+    <section class="faq-hero fade-in">
+        <p class="eyebrow">Help centre</p>
+        <h1>Frequently asked questions</h1>
+        <p class="lead">The questions learners send us most often, answered in one place.</p>
+        <div class="faq-search">
+            <label for="faq-search" class="visually-hidden">Search the FAQ</label>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+            <input type="search" id="faq-search" placeholder="Search questions, e.g. discount, certificate, Python" autocomplete="off">
+        </div>
+        <p class="faq-search-status" id="faq-search-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="faq-layout">
+        <aside class="faq-sidebar" aria-label="FAQ topics">
+            <nav>
+                <p class="faq-sidebar-title">Topics</p>
+                <a href="#topic-learning">Courses &amp; learning</a>
+                <a href="#topic-enrollment">Fees &amp; enrollment</a>
+                <a href="#topic-certificates">Certificates</a>
+            </nav>
+            <div class="faq-help">
+                <h2>Still have questions?</h2>
+                <p>Our team usually replies within one working day.</p>
+                <a class="btn btn-primary" href="{{ url_for('contact') }}">Contact us</a>
+            </div>
+        </aside>
+
+        <div class="faq-content">
+            <div class="faq-toolbar">
+                <button type="button" class="faq-expand" id="faq-expand" aria-pressed="false">Expand all</button>
+            </div>
+
+            <section class="faq-group" id="topic-learning" aria-labelledby="topic-learning-title">
+                <h2 id="topic-learning-title">Courses &amp; learning</h2>
+
+                {% call question('classes', 'When do the classes take place?', True) %}
+                    <p>All courses are fully online, so there's no campus timetable. How you study depends on the course:</p>
+                    <table class="faq-table">
+                        <thead><tr><th scope="col">Course</th><th scope="col">Delivery</th><th scope="col">Next start</th></tr></thead>
+                        <tbody>
+                            {% for item in courses %}
+                            <tr>
+                                <td><a href="{{ url_for('course') }}#{{ item.slug }}">{{ item.title }}</a></td>
+                                <td>{{ item.delivery }}</td>
+                                <td>{{ item.next_intake.start | nice_date if item.next_intake else 'To be announced' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p>Self-paced courses let you study whenever suits you. Instructor-paced courses follow the lecturer's weekly schedule, which you receive when your course starts.</p>
+                {% endcall %}
+
+                {% call question('duration', 'How long are the courses?') %}
+                    <ul class="faq-pills">
+                        {% for item in courses %}
+                        <li><strong>{{ item.title }}</strong> {{ item.duration_text }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endcall %}
+
+                {% call question('experience', 'Do I need any experience before I start?') %}
+                    <ul>
+                        {% for item in courses %}
+                        <li><strong>{{ item.title }}:</strong> {{ item.prerequisite | replace('Prerequisite: ', '') }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p>Not sure where to begin? <a href="{{ url_for('quiz') }}">Take the course quiz</a> and we'll suggest a course that matches your experience.</p>
+                {% endcall %}
+
+                {% call question('data-science-careers', 'How does the Data Science curriculum prepare students for industry jobs?') %}
+                    {% for item in courses if item.title == 'Data Science' %}
+                    <p>{{ item.description }}</p>
+                    <p><strong>What you'll cover:</strong> {{ item.details[-1][1] }}</p>
+                    <p><a href="{{ url_for('course') }}#{{ item.slug }}">View the Data Science course &rarr;</a></p>
+                    {% endfor %}
+                {% endcall %}
+
+                {% call question('textbooks', 'Are there any textbooks you recommend buying or reading?') %}
+                    <p>You don't need to buy anything before you start. Learning resources are available online throughout each course, and your lecturer will point you to any recommended reading for their course.</p>
+                {% endcall %}
+            </section>
+
+            <section class="faq-group" id="topic-enrollment" aria-labelledby="topic-enrollment-title">
+                <h2 id="topic-enrollment-title">Fees &amp; enrollment</h2>
+
+                {% call question('discounts', 'Are there any discounts for returning students?') %}
+                    <p>We love welcoming learners back. Discounts for returning students depend on the course and start date, so <a href="{{ url_for('contact', course='Returning student discount') }}">send us a message</a> with the course you're interested in and we'll tell you what's currently available.</p>
+                {% endcall %}
+
+                {% call question('enroll', 'How do I enroll, and are spaces limited?') %}
+                    <ol>
+                        <li>Choose a course on the <a href="{{ url_for('course') }}">courses page</a> and press <strong>Enroll</strong>.</li>
+                        <li>Pick one of the upcoming start dates. Courses start on the first day of every quarter: 1 January, 1 April, 1 July and 1 October.</li>
+                        <li>Fill in your name and email to confirm your spot.</li>
+                    </ol>
+                    <p>Each start date has a limited number of spots, and the courses page shows how many are left.</p>
+                {% endcall %}
+            </section>
+
+            <section class="faq-group" id="topic-certificates" aria-labelledby="topic-certificates-title">
+                <h2 id="topic-certificates-title">Certificates</h2>
+
+                {% call question('accreditation', 'Is this an accredited course?') %}
+                    <p>Every learner who completes a course receives a Cyber Education certificate of completion. If you need to know whether a course is formally accredited for a specific employer or institution, <a href="{{ url_for('contact') }}">contact us</a> and we'll confirm the details for that course.</p>
+                {% endcall %}
+            </section>
+
+            <p class="faq-empty" id="faq-empty" hidden>No questions match your search. <a href="{{ url_for('contact') }}">Ask us directly</a> instead.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        (() => {
+            const items = [...document.querySelectorAll('.faq-item')];
+            const groups = [...document.querySelectorAll('.faq-group')];
+            const search = document.getElementById('faq-search');
+            const status = document.getElementById('faq-search-status');
+            const empty = document.getElementById('faq-empty');
+            const expand = document.getElementById('faq-expand');
+
+            // Open the question named in the URL, e.g. /faq#classes
+            const openFromHash = () => {
+                const target = location.hash && document.getElementById(location.hash.slice(1));
+                if (target && target.classList.contains('faq-item')) {
+                    target.open = true;
+                    target.scrollIntoView({ block: 'start' });
+                }
+            };
+            openFromHash();
+            window.addEventListener('hashchange', openFromHash);
+
+            search.addEventListener('input', () => {
+                const query = search.value.trim().toLowerCase();
+                let shown = 0;
+                items.forEach(item => {
+                    const match = !query || item.textContent.toLowerCase().includes(query);
+                    item.hidden = !match;
+                    if (match) shown += 1;
+                    if (query && match) item.open = true;
+                });
+                groups.forEach(group => { group.hidden = !group.querySelector('.faq-item:not([hidden])'); });
+                empty.hidden = shown > 0;
+                status.textContent = query ? `${shown} ${shown === 1 ? 'question matches' : 'questions match'} your search` : '';
+            });
+
+            expand.addEventListener('click', () => {
+                const open = expand.getAttribute('aria-pressed') !== 'true';
+                items.forEach(item => { item.open = open; });
+                expand.setAttribute('aria-pressed', String(open));
+                expand.textContent = open ? 'Collapse all' : 'Expand all';
+            });
+        })();
+    </script>
+{% endblock %}

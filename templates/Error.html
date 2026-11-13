@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Page not found' if code == 404 else 'Something went wrong' }} | Cyber Education{% endblock %}
+
+{% block content %}
+    <section class="fade-in">
+        <p class="eyebrow">Error {{ code }}</p>
+        <h1>{{ 'Page not found' if code == 404 else 'Something went wrong' }}</h1>
+        <p class="lead">{% if code == 404 %}We couldn't find the page you were looking for.{% else %}{{ message }}{% endif %}</p>
+        <a class="btn btn-primary" href="{{ url_for('home') }}">Go to the home page</a>
+    </section>
+{% endblock %}

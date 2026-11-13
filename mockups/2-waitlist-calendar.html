@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waitlist Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+<style>
+  .intake { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px; padding:12px 16px; border:2px solid var(--line); border-radius:14px; }
+  .intake.sel { border-color:var(--brand); background:var(--brand-tint); }
+  .intake.full { background:#f7f9fc; }
+  .qcell { padding:10px; border-radius:12px; border:1px solid var(--line); background:#fff; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; All suggestions</a>
+  <p class="eyebrow">Suggestion 2</p>
+  <h1>Waitlist and start-date calendar</h1>
+  <p class="lead">Turn "Full" into a waitlist, show all quarters at a glance, and help people remember their start date.</p>
+  <div class="why"><strong>Why add it</strong>
+    <ul>
+      <li>A full quarter is a dead end today: the radio button is disabled.</li>
+      <li>Courses start on the 1st of every quarter, which fits a calendar view well.</li>
+      <li>Build: a <code>waitlist</code> table, and when someone cancels, offer the spot to the first person on the list. "Add to calendar" is a small <code>.ics</code> file.</li>
+    </ul>
+  </div>
+
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup A</span><h2>Waitlist on the enroll page</h2><p>Full quarters get a "Join waitlist" button instead of being greyed out.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/courses/cyber-security/enroll</span></div>
+      <div class="frame-body">
+        <p class="eyebrow">Enrollment</p>
+        <h2>Enroll in Cyber security</h2>
+        <p class="small muted">Choose a start date. Courses start on the first day of every quarter.</p>
+        <div class="stack" style="margin-top:14px">
+          <div class="intake full"><div><b>1 Jan 2027</b> <span class="pill bad">Full</span></div><div class="row"><span class="small muted">4 people waiting</span><a class="btn ghost" href="#">Join waitlist</a></div></div>
+          <div class="intake sel"><div><b>1 Apr 2027</b></div><span class="small"><b>3</b> of 20 spots left <span class="pill warn">Filling fast</span></span></div>
+          <div class="intake"><div><b>1 Jul 2027</b></div><span class="small">18 of 20 spots left</span></div>
+          <div class="intake"><div><b>1 Oct 2027</b></div><span class="small">20 of 20 spots left</span></div>
+        </div>
+        <div class="grid g2" style="margin-top:16px"><input placeholder="Full name"><input placeholder="Email"></div>
+        <a class="btn" href="#" style="margin-top:14px">Confirm enrollment</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup B</span><h2>Quarter calendar for all courses</h2><p>A grid of courses × quarters on the Courses page. Click a cell to enroll in that course for that quarter.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/start-dates</span></div>
+      <div class="frame-body">
+        <h2>Start dates</h2>
+        <div class="table-wrap" style="margin-top:12px">
+          <table style="min-width:640px">
+            <thead><tr><th>Course</th><th>1 Jan 2027</th><th>1 Apr 2027</th><th>1 Jul 2027</th><th>1 Oct 2027</th></tr></thead>
+            <tbody>
+              <tr><td><b>Machine Learning</b></td><td><div class="qcell">12 left</div></td><td><div class="qcell">30 left</div></td><td><div class="qcell">30 left</div></td><td><div class="qcell">30 left</div></td></tr>
+              <tr><td><b>Web development</b></td><td><div class="qcell"><span class="pill warn">2 left</span></div></td><td><div class="qcell">21 left</div></td><td><div class="qcell">25 left</div></td><td><div class="qcell">25 left</div></td></tr>
+              <tr><td><b>Cyber security</b></td><td><div class="qcell"><span class="pill bad">Full</span> · waitlist</div></td><td><div class="qcell"><span class="pill warn">3 left</span></div></td><td><div class="qcell">18 left</div></td><td><div class="qcell">20 left</div></td></tr>
+              <tr><td><b>Data Science</b></td><td><div class="qcell">9 left</div></td><td><div class="qcell">20 left</div></td><td><div class="qcell">20 left</div></td><td><div class="qcell">20 left</div></td></tr>
+              <tr><td><b>Python</b></td><td><div class="qcell">27 left</div></td><td><div class="qcell">35 left</div></td><td><div class="qcell">35 left</div></td><td><div class="qcell">35 left</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup C</span><h2>Confirmation with "Add to calendar"</h2><p>After enrolling or joining a waitlist, a clear next-steps page.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/courses/python/enroll?enrolled=2027-01-01</span></div>
+      <div class="frame-body">
+        <div class="split">
+          <div class="stack">
+            <span class="pill good">✓ You're enrolled</span>
+            <h2>Python starts on 1 January 2027</h2>
+            <p class="muted">We've emailed a confirmation to <b>thandi@example.com</b>.</p>
+            <div class="row" style="justify-content:flex-start"><a class="btn" href="#">Add to calendar (.ics)</a><a class="btn ghost" href="#">Google Calendar</a></div>
+            <h3 style="margin-top:18px">What happens next</h3>
+            <ol class="muted" style="padding-left:20px;margin:0">
+              <li>2 weeks before: you get your login and reading list.</li>
+              <li>1 Jan 2027: week 1 opens.</li>
+              <li>Need a later quarter? You can change it until 18 Dec 2026.</li>
+            </ol>
+          </div>
+          <div class="card tint" style="text-align:center">
+            <p class="eyebrow">Starts in</p>
+            <div class="stat">48 days</div>
+            <p class="small muted">Friday, 1 January 2027</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

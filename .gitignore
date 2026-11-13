@@ -1,0 +1,26 @@
+# Secrets (generated on first run - never commit these)
+.admin_password
+.secret_key
+.env
+
+# Database with real submissions (created automatically on first run)
+cyber_education.db
+cyber_education.db-*
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node.js (reinstalled with "npm install")
+node_modules/
+*.tmp
+
+# Editor / OS files
+.vscode/
+.DS_Store
+Thumbs.db
+~$*

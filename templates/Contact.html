@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Contact us | Cyber Education{% endblock %}
+{% block description %}Contact Cyber Education about our online technology courses.{% endblock %}
+
+{% block content %}
+    <div class="row g-4 g-lg-5 fade-in">
+        <div class="col-lg-7">
+        <section class="contact-form-section">
+            <p class="eyebrow">We'd love to hear from you</p>
+            <h1>Let's talk about your goals.</h1>
+            <p class="ms-0">Send us a note and our team will get back to you. You might find a quick answer in our <a href="{{ url_for('faq') }}">FAQ</a>.</p>
+            <div role="status" aria-live="polite">
+                {% if request.args.get('sent') == '1' %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Thank you!</strong> Your message has been sent. We'll reply within one working day.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+            <!-- Bootstrap validation: JavaScript adds is-invalid / is-valid; Flask checks the same rules again. -->
+            <form id="contact-form" class="needs-validation" action="{{ url_for('contact') }}" method="POST" novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-trap" aria-hidden="true">
+                    <label for="website">Leave this field empty</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control{{ ' is-invalid' if errors.name }}" id="name" name="name" autocomplete="name" required minlength="3" maxlength="100"
+                           value="{{ values.name }}" {% if errors.name %}aria-invalid="true"{% endif %} aria-describedby="nameError">
+                    <div class="invalid-feedback" id="nameError">{{ errors.name }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control{{ ' is-invalid' if errors.email }}" id="email" name="email" autocomplete="email" required maxlength="254"
+                           value="{{ values.email }}" {% if errors.email %}aria-invalid="true"{% endif %} aria-describedby="emailError">
+                    <div class="invalid-feedback" id="emailError">{{ errors.email }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="courseOfInterest" class="form-label">Course of interest</label>
+                    <input type="text" class="form-control{{ ' is-invalid' if errors.course }}" id="courseOfInterest" name="courseOfIntrest" list="course-options" required minlength="5" maxlength="100"
+                           value="{{ values.course or request.args.get('course', '') }}" {% if errors.course %}aria-invalid="true"{% endif %} aria-describedby="courseOfIntrestError">
+                    <datalist id="course-options">
+                        {% for name in course_names %}<option value="{{ name }}"></option>{% endfor %}
+                    </datalist>
+                    <div class="invalid-feedback" id="courseOfIntrestError">{{ errors.course }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control{{ ' is-invalid' if errors.message }}" id="message" name="message" rows="5" required minlength="10" maxlength="{{ message_max }}"
+                              {% if errors.message %}aria-invalid="true"{% endif %} aria-describedby="messageError">{{ values.message }}</textarea>
+                    <div class="invalid-feedback" id="messageError">{{ errors.message }}</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Send message</button>
+            </form>
+        </section>
+        </div>
+        <div class="col-lg-5">
+        <section id="footer-info" class="contact-info">
+            <h2>Get in touch</h2>
+            <p>Questions about a course, fees or schedules? We usually reply within one working day.</p>
+            <dl>
+                <div><dt>Email</dt><dd><a href="mailto:CyberEducation@gmail.com">CyberEducation@gmail.com</a></dd></div>
+                <div><dt>Phone</dt><dd><a href="tel:+27114207628">(011) 420 7628</a></dd></div>
+                <div><dt>Address</dt><dd>42 Torquay Rd, Rosebank, Johannesburg, 2140, South Africa</dd></div>
+            </dl>
+        </section>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        (() => {
+            const form = document.getElementById('contact-form');
+            // Same rules as the Flask contact() route in app.py.
+            const rules = [
+                ['name', 'nameError', value => value.trim().length >= 3, 'Please enter at least 3 characters.'],
+                ['email', 'emailError', value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()), 'Please enter a valid email address.'],
+                ['courseOfInterest', 'courseOfIntrestError', value => value.trim().length >= 5, 'Please enter at least 5 characters.'],
+                ['message', 'messageError', value => value.trim().length >= 10, 'Please enter at least 10 characters.']
+            ];
+
+            const check = ([fieldId, errorId, isValid, message]) => {
+                const input = document.getElementById(fieldId);
+                const valid = isValid(input.value);
+                input.classList.toggle('is-invalid', !valid);
+                input.classList.toggle('is-valid', valid);
+                input.setAttribute('aria-invalid', String(!valid));
+                document.getElementById(errorId).textContent = valid ? '' : message;
+                return valid ? null : input;
+            };
+
+            form.addEventListener('submit', event => {
+                const invalid = rules.map(check).filter(Boolean);
+                if (invalid.length) {
+                    event.preventDefault();
+                    invalid[0].focus();
+                }
+            });
+
+            // After a field has been flagged, re-check it as the visitor types.
+            rules.forEach(rule => {
+                const input = document.getElementById(rule[0]);
+                input.addEventListener('input', () => {
+                    if (input.classList.contains('is-invalid') || input.classList.contains('is-valid')) check(rule);
+                });
+            });
+        })();
+    </script>
+{% endblock %}

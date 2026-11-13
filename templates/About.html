@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}About us | Cyber Education{% endblock %}
+{% block description %}Meet the people and purpose behind Cyber Education.{% endblock %}
+
+{% block content %}
+    <section class="hero fade-in">
+        <div>
+            <p class="eyebrow">About Cyber Education</p>
+            <h1>Technology education for everyone.</h1>
+            <p class="lead">We help people build practical skills, discover new opportunities, and shape their own future in technology.</p>
+            <nav class="page-links" aria-label="About page sections">
+                <a href="#mission" class="a1">Our mission</a>
+                <a href="#how-we-teach" class="a1">How we teach</a>
+                <a href="#team" class="a1">Meet the team</a>
+                <a href="#lecturers" class="a1">Our lecturers</a>
+                <a href="#feedback" class="a1">Learner feedback</a>
+            </nav>
+        </div>
+        <div class="hero-media">
+            <img src="/static/Pictures/enhanced/Image%202.jpg" alt="A computer used for online learning" width="800" height="600">
+        </div>
+    </section>
+
+    <section class="numbers-band reveal" aria-label="Cyber Education in numbers">
+        <div><strong>{{ courses | length }}</strong><span>Online courses</span></div>
+        <div><strong>{{ lecturers | length }}</strong><span>Expert lecturers</span></div>
+        <div><strong>2</strong><span>Ways to learn: self-paced or instructor-led</span></div>
+        {% if rating_summary %}<div><strong>{{ rating_summary.average }}★</strong><span>Average rating from {{ rating_summary.count }} learners</span></div>{% endif %}
+    </section>
+
+    <section id="mission" class="reveal">
+        <p class="eyebrow">What drives us</p>
+        <h2>Our mission and vision</h2>
+        <div class="mission-grid">
+            <article class="mission-card">
+                <h3>Our vision</h3>
+                <p>To make transformative, world-class education accessible to everyone, wherever they are.</p>
+            </article>
+            <article class="mission-card mission-card--accent">
+                <h3>Our mission</h3>
+                <p>To pair academic knowledge with practical skills so learners can confidently succeed in the technology industry.</p>
+            </article>
+        </div>
+        <div class="row g-4 my-3">
+            <div class="col-md-4"><article class="card h-100"><div class="card-body"><span class="feature-icon" aria-hidden="true">01</span><h3 class="card-title">Flexible learning</h3><p class="card-text">Choose self-paced or instructor-led learning that works with your schedule.</p></div></article></div>
+            <div class="col-md-4"><article class="card h-100"><div class="card-body"><span class="feature-icon" aria-hidden="true">02</span><h3 class="card-title">Industry relevant</h3><p class="card-text">Learn useful skills and tools selected by experienced educators.</p></div></article></div>
+            <div class="col-md-4"><article class="card h-100"><div class="card-body"><span class="feature-icon" aria-hidden="true">03</span><h3 class="card-title">Career support</h3><p class="card-text">Access resources to help you plan your next professional step.</p></div></article></div>
+        </div>
+    </section>
+
+    <section class="values-section reveal">
+        <p class="eyebrow">What we value</p>
+        <h2>The principles behind every course</h2>
+        <div class="values-grid">
+            <div class="value"><h3>Access for all</h3><p>Online learning removes the need to travel or relocate, so anyone with a connection can learn with us.</p></div>
+            <div class="value"><h3>Learning by doing</h3><p>Projects, case studies and assessments help knowledge stick and build a portfolio you can show.</p></div>
+            <div class="value"><h3>Support that fits</h3><p>Learn independently or follow an instructor's pace, whichever matches your life right now.</p></div>
+            <div class="value"><h3>Always relevant</h3><p>Our courses cover the tools used in industry today, from Python and SQL to Tableau and modern web frameworks.</p></div>
+        </div>
+    </section>
+
+    <section id="how-we-teach" class="split-section reveal">
+        <img src="/static/Pictures/enhanced/Image%203.jpg" alt="A learner studying online on a laptop" loading="lazy">
+        <div>
+            <p class="eyebrow">How we teach</p>
+            <h2>Two ways to learn, one standard</h2>
+            <div class="teach-modes">
+                <div>
+                    <h3>Self-paced</h3>
+                    <p>Study whenever it suits you and move through the material at your own speed.</p>
+                    <p class="teach-courses">{% for item in courses if item.self_paced %}<a href="{{ url_for('course') }}#{{ item.slug }}">{{ item.title }}</a>{{ ', ' if not loop.last }}{% endfor %}</p>
+                </div>
+                <div>
+                    <h3>Instructor-paced</h3>
+                    <p>Follow a lecturer's weekly schedule and learn alongside other students.</p>
+                    <p class="teach-courses">{% for item in courses if not item.self_paced %}<a href="{{ url_for('course') }}#{{ item.slug }}">{{ item.title }}</a>{{ ', ' if not loop.last }}{% endfor %}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team" class="reveal">
+        <p class="eyebrow">The people behind the platform</p>
+        <h2>Meet our team</h2>
+        <div class="row g-4 my-3">
+            <div class="col-sm-6 col-lg-4"><article class="card team-card h-100">
+                <img src="/static/Pictures/Image%20of%20Team%20member%201.jpeg" class="card-img-top" alt="Lebogang Ndlela">
+                <div class="card-body"><h3 class="card-title">Lebogang Ndlela</h3><p class="team-role">CEO &amp; Founder</p><a href="mailto:LebogangN@gmail.com">Contact Lebogang</a></div>
+            </article></div>
+            <div class="col-sm-6 col-lg-4"><article class="card team-card h-100">
+                <img src="/static/Pictures/Image%20of%20Team%20member%202.jpeg" class="card-img-top" alt="Denise Khumalo">
+                <div class="card-body"><h3 class="card-title">Denise Khumalo</h3><p class="team-role">Director</p><a href="mailto:DeniseK@gmail.com">Contact Denise</a></div>
+            </article></div>
+            <div class="col-sm-6 col-lg-4"><article class="card team-card h-100">
+                <img src="/static/Pictures/Image%20of%20Team%20member%203.jpeg" class="card-img-top" alt="Rebecca Williams">
+                <div class="card-body"><h3 class="card-title">Rebecca Williams</h3><p class="team-role">Web developer</p><a href="mailto:RebeccaW@gmail.com">Contact Rebecca</a></div>
+            </article></div>
+        </div>
+    </section>
+
+    <section id="lecturers" class="reveal">
+        <p class="eyebrow">Learn from the experts</p>
+        <h2>Our lecturers</h2>
+        <div class="lecturer-grid">
+            {% for name, taught in lecturers.items() %}
+            <article class="lecturer">
+                <span class="lecturer-avatar" aria-hidden="true">{{ name.split()[0][0] }}{{ name.split()[-1][0] }}</span>
+                <div>
+                    <h3>{{ name }}</h3>
+                    <p>Teaches {% for title in taught %}<a href="{{ url_for('course') }}#{{ title | lower | replace(' ', '-') }}">{{ title }}</a>{{ ' and ' if not loop.last }}{% endfor %}</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="feedback" class="reveal">
+        <p class="eyebrow">Help us improve</p>
+        <h2>Learner feedback</h2>
+        <p>Suggest a course or tell us how we're doing. Your feedback appears below straight away.</p>
+        <div class="row g-4 mt-1 text-start">
+            <div class="col-lg-5">
+                <form id="feedback-form" class="card card-body" novalidate>
+                    <div class="form-trap" aria-hidden="true">
+                        <label for="feedback-website">Leave this field empty</label>
+                        <input type="text" id="feedback-website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+                    <div class="mb-3">
+                        <label for="feedback-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="feedback-name" name="name" autocomplete="name" required minlength="2" maxlength="60" aria-describedby="feedback-name-error">
+                        <div class="invalid-feedback" id="feedback-name-error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="feedback-topic" class="form-label">Topic</label>
+                        <select class="form-select" id="feedback-topic" name="topic" required aria-describedby="feedback-topic-error">
+                            <option value="">Choose a topic</option>
+                            <option>Course suggestion</option>
+                            <option>Learning experience</option>
+                            <option>Website</option>
+                            <option>Other</option>
+                        </select>
+                        <div class="invalid-feedback" id="feedback-topic-error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="feedback-message" class="form-label">Your feedback</label>
+                        <textarea class="form-control" id="feedback-message" name="message" rows="4" required minlength="10" maxlength="400" aria-describedby="feedback-message-error"></textarea>
+                        <div class="invalid-feedback" id="feedback-message-error"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send feedback</button>
+                    <div class="mt-3" id="feedback-status" role="status" aria-live="polite"></div>
+                </form>
+            </div>
+            <div class="col-lg-7">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h3 class="fs-5 mb-0">Latest feedback</h3>
+                    <span class="badge text-bg-light" id="feedback-count"></span>
+                </div>
+                <div class="text-center py-4" id="feedback-loading">
+                    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading feedback…</span></div>
+                </div>
+                <ul class="feedback-list" id="feedback-list"></ul>
+                <p class="text-muted" id="feedback-empty" hidden>No feedback yet. Be the first to share yours.</p>
+                <div class="alert alert-warning" id="feedback-offline" role="alert" hidden>The feedback service isn't available right now. Please try again later.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="visit-section reveal">
+        <div>
+            <p class="eyebrow">Find us</p>
+            <h2>Based in Johannesburg, learning everywhere</h2>
+            <p>Our team works from Rosebank, and our learners study online from wherever they are.</p>
+        </div>
+        <dl class="visit-details">
+            <div><dt>Address</dt><dd>42 Torquay Rd, Rosebank, Johannesburg, 2140, South Africa</dd></div>
+            <div><dt>Email</dt><dd><a href="mailto:CyberEducation@gmail.com">CyberEducation@gmail.com</a></dd></div>
+            <div><dt>Phone</dt><dd><a href="tel:+27114207628">(011) 420 7628</a></dd></div>
+        </dl>
+    </section>
+
+    <section class="cta-band reveal">
+        <h2>Become part of the story</h2>
+        <p>Read what our learners say, or find the course that's right for you.</p>
+        <div class="hero-actions">
+            <a class="btn btn-light" href="{{ url_for('quiz') }}">Take the course quiz</a>
+            <a class="btn btn-outline-light" href="{{ url_for('testimonials_page') }}">Read testimonials</a>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // Learner feedback is handled by the Node.js / Express server (server.js) and stored in feedback.json.
+        (() => {
+            const API = '{{ node_api_url }}/api/feedback';
+            const form = document.getElementById('feedback-form');
+            const list = document.getElementById('feedback-list');
+            const status = document.getElementById('feedback-status');
+            const loading = document.getElementById('feedback-loading');
+            const empty = document.getElementById('feedback-empty');
+            const offline = document.getElementById('feedback-offline');
+            const count = document.getElementById('feedback-count');
+            const fields = {
+                name: document.getElementById('feedback-name'),
+                topic: document.getElementById('feedback-topic'),
+                message: document.getElementById('feedback-message'),
+            };
+            const dateFormat = new Intl.DateTimeFormat('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+            let entries = [];
+
+            const el = (tag, className, text) => {
+                const node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text !== undefined) node.textContent = text;
+                return node;
+            };
+
+            const feedbackItem = entry => {
+                const item = el('li', 'feedback-item');
+                const meta = el('div', 'd-flex flex-wrap justify-content-between gap-2');
+                meta.append(el('strong', '', entry.name), el('span', 'badge rounded-pill text-bg-primary', entry.topic));
+                item.append(meta, el('p', '', entry.message), el('span', 'feedback-meta', dateFormat.format(new Date(entry.createdAt))));
+                return item;
+            };
+
+            const show = () => {
+                list.replaceChildren(...entries.slice(0, 6).map(feedbackItem));
+                empty.hidden = entries.length > 0;
+                count.textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+            };
+
+            const load = async () => {
+                try {
+                    const response = await fetch(API);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    entries = await response.json();
+                    offline.hidden = true;
+                    show();
+                } catch (error) {
+                    console.warn('Feedback API unavailable. Is the Node.js server running (npm start)?', error);
+                    offline.hidden = false;
+                } finally {
+                    loading.hidden = true;
+                }
+            };
+
+            const setError = (name, message) => {
+                fields[name].classList.toggle('is-invalid', Boolean(message));
+                document.getElementById(`feedback-${name}-error`).textContent = message || '';
+            };
+
+            // Same rules as POST /api/feedback in server.js.
+            const validate = () => {
+                const errors = {};
+                const name = fields.name.value.trim();
+                const message = fields.message.value.trim();
+                if (name.length < 2 || name.length > 60) errors.name = 'Please enter a name between 2 and 60 characters.';
+                if (!fields.topic.value) errors.topic = 'Please choose a topic.';
+                if (message.length < 10 || message.length > 400) errors.message = 'Please enter between 10 and 400 characters.';
+                return errors;
+            };
+
+            const showStatus = (kind, text) => status.replaceChildren(el('div', `alert alert-${kind} mb-0`, text));
+
+            form.addEventListener('submit', async event => {
+                event.preventDefault();
+                status.replaceChildren();
+                const errors = validate();
+                Object.keys(fields).forEach(name => setError(name, errors[name]));
+                const firstInvalid = Object.keys(fields).find(name => errors[name]);
+                if (firstInvalid) {
+                    fields[firstInvalid].focus();
+                    return;
+                }
+
+                const button = form.querySelector('button[type="submit"]');
+                button.disabled = true;
+                try {
+                    const response = await fetch(API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: fields.name.value.trim(),
+                            topic: fields.topic.value,
+                            message: fields.message.value.trim(),
+                            website: document.getElementById('feedback-website').value,
+                        }),
+                    });
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        const serverErrors = data.errors || {};
+                        Object.keys(fields).forEach(name => setError(name, serverErrors[name]));
+                        showStatus('danger', serverErrors.form || 'Please check the form and try again.');
+                        return;
+                    }
+                    if (data.id) entries.unshift(data);
+                    show();
+                    form.reset();
+                    showStatus('success', 'Thank you! Your feedback has been added.');
+                } catch (error) {
+                    showStatus('danger', "We couldn't reach the feedback service. Please try again later.");
+                } finally {
+                    button.disabled = false;
+                }
+            });
+
+            load();
+        })();
+    </script>
+{% endblock %}

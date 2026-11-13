@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Courses | Cyber Education{% endblock %}
+{% block description %}Explore flexible online technology courses from Cyber Education.{% endblock %}
+
+{% block content %}
+    <section class="courses-section fade-in">
+        <div class="courses-head">
+            <div>
+                <h1>Explore our courses</h1>
+                <p class="lead">Choose a flexible, practical course and take your next step in technology.</p>
+            </div>
+            <div class="courses-head-links">
+                <a href="{{ url_for('quiz') }}">Not sure? Take the quiz &rarr;</a>
+                <a href="{{ url_for('compare') }}">Compare courses &rarr;</a>
+                <a href="{{ url_for('contact') }}">Ask us about a course &rarr;</a>
+            </div>
+        </div>
+
+        <form class="course-filters row g-3 align-items-end" role="search" aria-label="Filter courses">
+            <div class="col-12 col-md-6 col-lg-5">
+                <label for="course-search" class="form-label">Search</label>
+                <input type="search" class="form-control" id="course-search" name="q" value="{{ filters.q }}" placeholder="e.g. Python, security, data" maxlength="60">
+            </div>
+            <div class="col-6 col-md-3">
+                <label for="course-delivery" class="form-label">Delivery</label>
+                <select class="form-select" id="course-delivery" name="delivery">
+                    <option value="">Any</option>
+                    <option value="self" {% if filters.delivery == 'self' %}selected{% endif %}>Self-paced</option>
+                    <option value="instructor" {% if filters.delivery == 'instructor' %}selected{% endif %}>Instructor-paced</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <label for="course-length" class="form-label">Duration</label>
+                <select class="form-select" id="course-length" name="length">
+                    <option value="">Any</option>
+                    <option value="short" {% if filters.length == 'short' %}selected{% endif %}>Up to 12 weeks</option>
+                    <option value="medium" {% if filters.length == 'medium' %}selected{% endif %}>13–16 weeks</option>
+                    <option value="long" {% if filters.length == 'long' %}selected{% endif %}>17+ weeks</option>
+                </select>
+            </div>
+            <div class="col-12 col-lg-2">
+                <button type="button" class="btn btn-outline-primary w-100" id="course-filter-reset">Clear filters</button>
+            </div>
+        </form>
+        <p class="course-count" id="course-count" role="status" aria-live="polite">Loading courses…</p>
+
+        <div id="course-list" class="row g-4" aria-busy="true">
+            <div class="col-12 text-center py-5" id="course-loading">
+                <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading courses…</span></div>
+            </div>
+        </div>
+        <div class="alert alert-warning mt-3" id="course-error" role="alert" hidden>
+            We couldn't load the courses. Please check your connection and <a href="{{ url_for('course') }}">reload the page</a>.
+        </div>
+        <p class="course-empty" id="course-empty" hidden>No courses match those filters. Try clearing them or <a href="{{ url_for('quiz') }}">take the quiz</a>.</p>
+
+        <noscript>
+            <ul class="list-unstyled mt-3">
+                {% for item in courses %}
+                <li><a href="{{ url_for('enroll', slug=item.slug) }}">{{ item.title }}</a> · {{ item.duration_text }} · {{ item.delivery }}</li>
+                {% endfor %}
+            </ul>
+        </noscript>
+    </section>
+
+    <!-- Course details modal (Bootstrap). Filled in by JavaScript when it opens. -->
+    <div class="modal fade" id="course-modal" tabindex="-1" aria-labelledby="course-modal-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content course-modal">
+                <img class="course-modal-img" id="course-modal-img" src="" alt="">
+                <div class="modal-header">
+                    <div>
+                        <p class="course-tile-duration mb-1" id="course-modal-meta"></p>
+                        <h2 class="modal-title fs-3" id="course-modal-title"></h2>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="course-modal-description"></p>
+                    <ul class="course-meta" id="course-modal-details"></ul>
+                    <h3 class="fs-6 mt-4">Upcoming start dates</h3>
+                    <ul class="list-group" id="course-modal-intakes"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+                    <a class="btn btn-primary" id="course-modal-enroll" href="#">Enroll</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        (() => {
+            const API_URL = '{{ url_for("api_courses") }}';
+            const REFRESH_MS = 60000; // keep "spots left" up to date without reloading the page
+
+            const list = document.getElementById('course-list');
+            const search = document.getElementById('course-search');
+            const delivery = document.getElementById('course-delivery');
+            const length = document.getElementById('course-length');
+            const count = document.getElementById('course-count');
+            const empty = document.getElementById('course-empty');
+            const errorBox = document.getElementById('course-error');
+            const modalElement = document.getElementById('course-modal');
+            let courses = [];
+            let openedFromHash = false;
+
+            // Small helper to build elements safely (text is never parsed as HTML).
+            const el = (tag, className, text) => {
+                const node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text !== undefined) node.textContent = text;
+                return node;
+            };
+            const spotsText = intake => `${intake.spots_left} ${intake.spots_left === 1 ? 'spot' : 'spots'} left`;
+
+            const courseCard = course => {
+                const col = el('div', 'col-12 col-md-6 col-xl-4 d-flex');
+                const card = el('article', `card course-tile${course.featured ? ' course-tile--featured' : ''}`);
+                card.id = course.slug;
+
+                const img = el('img', 'course-tile-img');
+                img.src = course.image;
+                img.alt = `${course.title} course`;
+                img.loading = 'lazy';
+
+                const body = el('div', 'card-body course-tile-body');
+                if (course.badge) body.append(el('span', 'badge course-badge', course.badge));
+                body.append(
+                    el('p', 'course-tile-duration', `${course.duration} · ${course.delivery}`),
+                    el('h2', 'card-title course-tile-title', course.title),
+                    el('p', 'card-text course-description', course.description)
+                );
+
+                const intake = el('p', 'course-intake');
+                if (course.next_intake) {
+                    intake.append('Next start: ', el('strong', '', course.next_intake.label), ` · ${spotsText(course.next_intake)}`);
+                } else {
+                    intake.textContent = 'No open start dates right now';
+                }
+
+                const actions = el('div', 'course-actions');
+                const details = el('button', 'course-toggle', 'View details');
+                details.type = 'button';
+                details.dataset.bsToggle = 'modal';
+                details.dataset.bsTarget = '#course-modal';
+                details.dataset.slug = course.slug;
+                details.setAttribute('aria-label', `View details for ${course.title}`);
+                actions.append(details);
+                if (course.next_intake) {
+                    const enroll = el('a', 'course-enroll', 'Enroll');
+                    enroll.href = course.enroll_url;
+                    enroll.append(el('span', 'visually-hidden', ` in ${course.title}`));
+                    actions.append(enroll);
+                }
+
+                body.append(intake, actions);
+                card.append(img, body);
+                col.append(card);
+                return col;
+            };
+
+            const matches = course => {
+                const query = search.value.trim().toLowerCase();
+                const text = `${course.title} ${course.description} ${course.outline}`.toLowerCase();
+                return (!query || text.includes(query))
+                    && (!delivery.value || course.self_paced === (delivery.value === 'self'))
+                    && (!length.value || course.length_group === length.value);
+            };
+
+            const render = () => {
+                const shown = courses.filter(matches);
+                list.replaceChildren(...shown.map(courseCard));
+                list.setAttribute('aria-busy', 'false');
+                count.textContent = `Showing ${shown.length} of ${courses.length} courses`;
+                empty.hidden = shown.length > 0 || courses.length === 0;
+
+                // Keep the filters in the address bar so the view can be shared.
+                const params = new URLSearchParams();
+                if (search.value.trim()) params.set('q', search.value.trim());
+                if (delivery.value) params.set('delivery', delivery.value);
+                if (length.value) params.set('length', length.value);
+                history.replaceState(null, '', (params.toString() ? `?${params}` : location.pathname) + location.hash);
+            };
+
+            const loadCourses = async () => {
+                try {
+                    const response = await fetch(API_URL, { headers: { Accept: 'application/json' } });
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    courses = await response.json();
+                    errorBox.hidden = true;
+                    render();
+                    openFromHash();
+                } catch (error) {
+                    console.error('Could not load courses:', error);
+                    if (!courses.length) {
+                        list.replaceChildren();
+                        count.textContent = '';
+                        errorBox.hidden = false;
+                    }
+                }
+            };
+
+            // Fill the Bootstrap modal with the chosen course.
+            modalElement.addEventListener('show.bs.modal', event => {
+                const slug = event.relatedTarget?.dataset.slug || modalElement.dataset.slug;
+                const course = courses.find(item => item.slug === slug);
+                if (!course) return;
+                document.getElementById('course-modal-img').src = course.image;
+                document.getElementById('course-modal-img').alt = `${course.title} course`;
+                document.getElementById('course-modal-meta').textContent = `${course.duration} · ${course.delivery}`;
+                document.getElementById('course-modal-title').textContent = course.title;
+                document.getElementById('course-modal-description').textContent = course.description;
+
+                document.getElementById('course-modal-details').replaceChildren(...course.details.map(detail => {
+                    const item = el('li');
+                    if (detail.label) item.append(el('strong', '', `${detail.label}: `));
+                    item.append(detail.value);
+                    return item;
+                }));
+
+                const intakes = course.intakes.length ? course.intakes.map(intake => {
+                    const item = el('li', 'list-group-item d-flex justify-content-between align-items-center');
+                    item.append(el('span', '', intake.label),
+                        el('span', `badge rounded-pill ${intake.full ? 'text-bg-danger' : 'text-bg-light'}`,
+                            intake.full ? 'Full' : spotsText(intake)));
+                    return item;
+                }) : [el('li', 'list-group-item', 'No upcoming start dates.')];
+                document.getElementById('course-modal-intakes').replaceChildren(...intakes);
+
+                const enroll = document.getElementById('course-modal-enroll');
+                enroll.href = course.enroll_url;
+                enroll.hidden = !course.next_intake;
+                enroll.textContent = `Enroll in ${course.title}`;
+            });
+
+            // Links like /courses#machine-learning (from the quiz or home page) open that course.
+            const openFromHash = () => {
+                if (openedFromHash || !location.hash) return;
+                const slug = decodeURIComponent(location.hash.slice(1));
+                if (!courses.some(item => item.slug === slug)) return;
+                openedFromHash = true;
+                modalElement.dataset.slug = slug;
+                bootstrap.Modal.getOrCreateInstance(modalElement).show();
+                delete modalElement.dataset.slug;
+            };
+
+            document.querySelector('.course-filters').addEventListener('submit', event => event.preventDefault());
+            [search, delivery, length].forEach(field => field.addEventListener('input', render));
+            document.getElementById('course-filter-reset').addEventListener('click', () => {
+                search.value = '';
+                delivery.value = '';
+                length.value = '';
+                render();
+                search.focus();
+            });
+
+            loadCourses();
+            setInterval(() => { if (!document.hidden) loadCourses(); }, REFRESH_MS);
+        })();
+    </script>
+{% endblock %}

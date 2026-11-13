@@ -1,0 +1,59 @@
+[
+    {
+        "image": "/static/Pictures/enhanced/ML image.jpg",
+        "title": "Machine Learning",
+        "description": "This course presents machine learning concepts, techniques, and applications from a modelling and prediction perspective. You will learn about machine learning theory, neural networks, decision tree learning, and statistical learning techniques. The PAC learning framework, Bayesian learning techniques, Occam's Razor, and inductive bias are among the theoretical ideas covered in this course.",
+        "duration": "Course duration: 12 weeks",
+        "modeOfDelivery": "Mode of delivery: Online, instructor paced",
+        "lecturer": "Lecturer: Lesile Kalbling",
+        "prerequisite": "Prerequisite: None",
+        "courseOutline": "Course outline: Introduction to machine learning, Neural networks, Logistic regression, Decision trees and Kernels",
+        "capacity": 30
+    },
+    {
+        "image": "/static/Pictures/enhanced/WD Image.jpg",
+        "title": "Web development",
+        "description": "Through this course you can obtain knowledge about front-end, back-end, and full-stack Web Development. This course will cover database management, web publishing, web design, and web programming. We will be making use of HTML, CSS, JavaScript throughout this course. By the end of this course you should be able to build fully-fledged websites and web apps.",
+        "duration": "Course duration: 16 weeks",
+        "modeOfDelivery": "Mode of delivery: Online, instructor paced",
+        "lecturer": "Lecturer: Cecilia Palmer",
+        "prerequisite": "Prerequisite: None",
+        "courseOutline": "Course outline: Introduction to web development, HTML and Cascading Style Sheets, Bootstrap, JS Functions and Objects and Front End Libraries & Frameworks",
+        "capacity": 25
+    },
+    {
+        "image": "/static/Pictures/enhanced/CS Image.jpg",
+        "title": "Cyber security",
+        "description": "This course covers fundamental security concepts, threat analysis, vulnerability assessments, and network defence. Throughout this course you will learn how to implement security measures, use industry-standard tools, and best practices to safeguard sensitive data.",
+        "duration": "Course duration: 12 weeks",
+        "modeOfDelivery": "Mode of delivery: Online, self paced",
+        "lecturer": "Lecturer: Robyn Ally",
+        "prerequisite": "Prerequisite: Learners must have an understanding of core Computer science fundamentals.",
+        "courseOutline": "Course outline: Cybersecurity Fundamentals, Cyber threats, Enterprise Architecture and Components, Information System Governance and Risk Assessments and Incident management",
+        "featured": true,
+        "badge": "Most popular",
+        "capacity": 20
+    },
+    {
+        "image": "/static/Pictures/enhanced/DS Image.jpg",
+        "title": "Data Science",
+        "description": "Throughout this course you will learn how to preprocess data, clean data, and analyse large data. We will explore large datasets using data visualization tools like Tableau and Domo and learn how to program in Python. We will analyse Real life case studies and projects to understand how things are done in the real world. During this course you will learn how to implement Machine learning algorithms and learn about SQL and Python fundamentals.",
+        "duration": "Course duration: 18 weeks",
+        "modeOfDelivery": "Mode of delivery: Online, self-paced",
+        "lecturer": "Lecturer: Karabo Motaung",
+        "prerequisite": "Prerequisite: Proficiency in programming languages like Python and R.",
+        "courseOutline": "Course outline: Introduction to data analysis tools, Data science and ethical issues, Machine Learning Algorithms, Data visualization and Programming in Python & R",
+        "capacity": 20
+    },
+    {
+        "image": "/static/Pictures/enhanced/P Image.jpg",
+        "title": "Python",
+        "description": "Throughout this course you will learn about core programming concepts like data structures, conditionals, loops, variables, and functions. By the end of this course, you will be able to design and write fully-functional Python programs using commonly used data structures, custom functions, and reading and writing to files.",
+        "duration": "Course duration: 16 weeks",
+        "modeOfDelivery": "Mode of delivery: Online, instructor paced",
+        "lecturer": "Lecturer: Lesile Kalbling",
+        "prerequisite": "Prerequisite: None",
+        "courseOutline": "Course outline: Introduction to Python, Python Basics, Functions & Modules, Exception handling and Data structures",
+        "capacity": 35
+    }
+]

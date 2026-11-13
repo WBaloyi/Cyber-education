@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mockup.css">
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; All suggestions</a>
+  <p class="eyebrow">Suggestion 1</p>
+  <h1>Student portal: "My learning"</h1>
+  <p class="lead">A signed-in area where learners manage what they enrolled in.</p>
+  <div class="why"><strong>Why add it</strong>
+    <ul>
+      <li>Learners can't see or change an enrollment after the confirmation message.</li>
+      <li>Cancelling frees the spot for someone else, so fewer quarters show "Full" when they aren't.</li>
+      <li>Simple build: a "magic link" email login, plus a <code>progress</code> column on the <code>enrollments</code> table.</li>
+    </ul>
+  </div>
+
+  <!-- Variant A -->
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup A</span><h2>Dashboard cards</h2><p>Each enrollment as a card with progress and quick actions.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/my-learning</span></div>
+      <div class="mini-nav"><b>Cyber Education</b><nav><span>Courses</span><span>FAQ</span><span style="color:var(--brand);font-weight:800">My learning</span><span>Sign out</span></nav></div>
+      <div class="frame-body">
+        <div class="row"><div><p class="eyebrow">Welcome back</p><h2>Thandi, you have 2 courses</h2></div><a class="btn" href="#">Browse more courses</a></div>
+        <div class="grid g2" style="margin-top:18px">
+          <div class="card stack">
+            <div class="row"><span class="pill good">In progress</span><span class="small muted">Started 1 Oct 2026</span></div>
+            <h3>Python</h3>
+            <div class="row small"><span>Week 7 of 16</span><b>44%</b></div>
+            <div class="progress"><i style="width:44%"></i></div>
+            <p class="small muted">Next: Functions &amp; Modules, Lesson 3</p>
+            <div class="row"><a class="btn" href="#">Continue</a><a href="#" class="small">Course materials</a></div>
+          </div>
+          <div class="card stack">
+            <div class="row"><span class="pill">Upcoming</span><span class="small muted">Starts 1 Jan 2027</span></div>
+            <h3>Cyber security</h3>
+            <p class="small muted">Starts in 48 days. 6 of 20 spots left in this quarter.</p>
+            <div class="row"><a class="btn ghost" href="#">Change start date</a><a href="#" class="small" style="color:var(--bad)">Cancel enrollment</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Variant B -->
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup B</span><h2>Timeline</h2><p>Enrollments laid out by quarter, past to future.</p></div>
+    <div class="frame">
+      <div class="frame-bar"><i></i><i></i><i></i><span>cybereducation.local/my-learning</span></div>
+      <div class="frame-body">
+        <h2>My learning timeline</h2>
+        <div style="position:relative;margin-top:18px;padding-left:28px;border-left:3px solid var(--line)">
+          <div style="position:relative;margin-bottom:22px">
+            <span style="position:absolute;left:-38px;top:4px;width:17px;height:17px;border-radius:50%;background:var(--good)"></span>
+            <p class="eyebrow" style="color:var(--good)">Q3 2026 · 1 Jul</p>
+            <div class="card row"><div><h3>Web development</h3><p class="small muted">Completed · Final mark 78%</p></div><a class="btn ghost" href="#">Download certificate</a></div>
+          </div>
+          <div style="position:relative;margin-bottom:22px">
+            <span style="position:absolute;left:-38px;top:4px;width:17px;height:17px;border-radius:50%;background:var(--brand)"></span>
+            <p class="eyebrow">Q4 2026 · 1 Oct · now</p>
+            <div class="card"><div class="row"><h3>Python</h3><span class="small">Week 7 of 16</span></div><div class="progress" style="margin-top:8px"><i style="width:44%"></i></div></div>
+          </div>
+          <div style="position:relative">
+            <span style="position:absolute;left:-38px;top:4px;width:17px;height:17px;border-radius:50%;background:#fff;border:3px solid var(--brand)"></span>
+            <p class="eyebrow">Q1 2027 · 1 Jan</p>
+            <div class="card row"><div><h3>Cyber security</h3><p class="small muted">Starts in 48 days</p></div><div class="row"><a class="btn ghost" href="#">Move to 1 Apr 2027</a></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Variant C -->
+  <section class="variant">
+    <div class="variant-head"><span class="tag">Mockup C</span><h2>Mobile-first with email sign-in</h2><p>No password: a one-time link is emailed to the address they enrolled with.</p></div>
+    <div class="grid g2">
+      <div class="phone"><div class="frame-body stack">
+        <p class="eyebrow">My learning</p>
+        <h2>Sign in</h2>
+        <p class="small muted">Enter the email you enrolled with and we'll send you a sign-in link.</p>
+        <input type="email" placeholder="you@example.com" style="width:100%">
+        <a class="btn block" href="#">Email me a link</a>
+        <p class="small muted">No account needed. The link works for 15 minutes.</p>
+      </div></div>
+      <div class="phone"><div class="frame-body stack">
+        <div class="row"><b>My learning</b><span class="small muted">Sign out</span></div>
+        <div class="card stack"><div class="row"><h3>Python</h3><span class="pill good">Week 7</span></div><div class="progress"><i style="width:44%"></i></div><a class="btn block" href="#">Continue lesson</a></div>
+        <div class="card stack"><div class="row"><h3>Cyber security</h3><span class="pill">1 Jan 2027</span></div><a class="btn ghost block" href="#">Manage enrollment</a></div>
+      </div></div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

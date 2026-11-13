@@ -1,0 +1,44 @@
+[
+    {
+        "name": "Wesani",
+        "email": "Wesani603@gmail.com",
+        "courseOfIntrest": "Python",
+        "message": "Are there any discounts available for returning students?"
+    },
+    {
+        "name": "Miyanda",
+        "email": "MiyandaS@gmail.com",
+        "courseOfIntrest": "Web development",
+        "message": "Are there any textbooks you recommend buying/ reading?"
+    },
+    {
+        "name": "Daniel",
+        "email": "DanielSmith@gmail.com",
+        "courseOfIntrest": "Machine learning",
+        "message": "Is this an accredited course? "
+    },
+    {
+        "name": "Rachel",
+        "email": "RachelW@gmail.com",
+        "courseOfIntrest": "Cyber Security",
+        "message": "Are there any discounts available for returning students?"
+    },
+    {
+        "name": "Paul",
+        "email": "PaulWest@gmail.com",
+        "courseOfIntrest": "Data science",
+        "message": "How does your data science curriculum prepare students for industry jobs?"
+    },
+    {
+        "name": "Zinhle",
+        "email": "ZinhleN@gmail.com",
+        "courseOfIntrest": "Python",
+        "message": "When do the classes take place?"
+    },
+    {
+        "name": "Wesani Baloyi",
+        "email": "Wesani22@gmail.com",
+        "courseOfIntrest": "Data science",
+        "message": "I would definitely recommend these courses to other people!"
+    }
+]

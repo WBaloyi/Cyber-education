@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Testimonials | Cyber Education{% endblock %}
+{% block description %}Read what learners say about Cyber Education and share your own experience.{% endblock %}
+
+{% block content %}
+    <section class="testimonial-section fade-in" id="testimonials">
+        <p class="eyebrow">Learner stories</p>
+        <h1>What our learners say</h1>
+        <p class="lead">Real experiences from people building their tech careers with Cyber Education.</p>
+
+        {% if rating_summary %}
+        <div class="rating-summary">
+            <strong class="rating-summary-score">{{ rating_summary.average }}</strong>
+            <div>
+                {% set rounded = rating_summary.average | round | int %}
+                <p class="testimonial-rating" aria-hidden="true">{{ '★' * rounded }}{{ '☆' * (5 - rounded) }}</p>
+                <p class="rating-summary-text">Average rating out of 5, from {{ rating_summary.count }} {{ 'rating' if rating_summary.count == 1 else 'ratings' }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if testimonials %}
+        <div class="testimonial-carousel" data-carousel role="region" aria-roledescription="carousel" aria-label="Learner testimonials">
+            <div class="testimonial-viewport">
+                <div class="testimonial-wrapper">
+                    {% for testimonial in testimonials %}
+                    <article class="testimonial-card">
+                        <span class="testimonial-quote-mark" aria-hidden="true">“</span>
+                        <blockquote>{{ testimonial.message }}</blockquote>
+                        <p class="testimonial-author">{{ testimonial.name }}</p>
+                        {% if testimonial.rating %}
+                        <p class="testimonial-rating" aria-label="{{ testimonial.rating }} out of 5 stars">{{ '★' * testimonial.rating }}{{ '☆' * (5 - testimonial.rating) }}</p>
+                        {% else %}
+                        <p class="testimonial-tag">Community member</p>
+                        {% endif %}
+                    </article>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="carousel-controls">
+                <button class="carousel-arrow" type="button" data-carousel-prev aria-label="Previous testimonial">&#8592;</button>
+                <div class="indicators" role="group" aria-label="Choose a testimonial"></div>
+                <button class="carousel-arrow" type="button" data-carousel-next aria-label="Next testimonial">&#8594;</button>
+            </div>
+            <p class="carousel-status" data-carousel-status aria-live="polite"></p>
+        </div>
+        {% else %}
+        <p>No testimonials yet. Be the first to share your experience below.</p>
+        {% endif %}
+    </section>
+
+    <section id="share">
+        <p class="eyebrow">Your turn</p>
+        <h2>Share your learning experience</h2>
+        <p>Tell us what you think about learning with Cyber Education. Our team reads every testimonial before it appears on this page.</p>
+        <p id="share-status" class="form-status" role="status" aria-live="polite">{% if request.args.get('sent') == '1' %}Thank you! Your testimonial has been received and will appear once our team has approved it.{% endif %}</p>
+        <form action="{{ url_for('submit_testimonial') }}" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-trap" aria-hidden="true">
+                <label for="website">Leave this field empty</label>
+                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label for="testimonial-name" class="form-label">Name</label>
+                <input type="text" id="testimonial-name" name="name" class="form-control" autocomplete="name" required
+                       minlength="2" maxlength="{{ limits.name }}" value="{{ values.name }}"
+                       {% if errors.name %}aria-invalid="true"{% endif %} aria-describedby="testimonial-name-error">
+                <span class="error" id="testimonial-name-error">{{ errors.name }}</span>
+            </div>
+            <fieldset class="mb-3 star-field" aria-describedby="testimonial-rating-error">
+                <legend class="form-label">Your rating</legend>
+                <div class="star-input">
+                    {% for stars in range(5, 0, -1) %}
+                    <input type="radio" id="rating-{{ stars }}" name="rating" value="{{ stars }}" {% if values.rating == stars|string %}checked{% endif %} required>
+                    <label for="rating-{{ stars }}" title="{{ stars }} {{ 'star' if stars == 1 else 'stars' }}"><span aria-hidden="true">★</span><span class="visually-hidden">{{ stars }} {{ 'star' if stars == 1 else 'stars' }}</span></label>
+                    {% endfor %}
+                </div>
+                <span class="error" id="testimonial-rating-error">{{ errors.rating }}</span>
+            </fieldset>
+            <div class="mb-3">
+                <label for="testimonial-message" class="form-label">Your testimonial</label>
+                <textarea id="testimonial-message" name="message" class="form-control" rows="4" required
+                          minlength="{{ limits.message_min }}" maxlength="{{ limits.message }}"
+                          {% if errors.message %}aria-invalid="true"{% endif %}
+                          aria-describedby="testimonial-message-count testimonial-message-error">{{ values.message }}</textarea>
+                <div class="field-footer">
+                    <span class="error" id="testimonial-message-error">{{ errors.message }}</span>
+                    <span class="char-count" id="testimonial-message-count" data-max="{{ limits.message }}">{{ (values.message or '') | length }} / {{ limits.message }}</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit testimonial</button>
+        </form>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/Testimonial.js"></script>
+{% endblock %}

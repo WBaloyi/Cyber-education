@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Cyber Education | Learn skills for what's next{% endblock %}
+{% block description %}Learn practical, career-ready technology skills with Cyber Education.{% endblock %}
+
+{% block content %}
+    <section class="hero-centered fade-in">
+        <p class="hero-kicker">Your next chapter starts here</p>
+        <h1>Build skills for a digital future.</h1>
+        <p class="lead">
+            Cyber Education makes practical technology learning accessible. Study at your own pace, learn from industry professionals, and take the next step in your career.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="{{ url_for('course') }}">Explore our courses</a>
+            <a class="btn btn-outline-primary" href="{{ url_for('quiz') }}">Find my course</a>
+        </div>
+        <ul class="hero-stats">
+            <li><strong>{{ courses | length }}</strong><span>Career-ready courses</span></li>
+            <li><strong>100%</strong><span>Online learning</span></li>
+            <li><strong>12–18</strong><span>Weeks per course</span></li>
+            {% if rating_summary %}<li><strong>{{ rating_summary.average }}★</strong><span>Average learner rating</span></li>{% endif %}
+        </ul>
+        <img class="hero-banner" src="/static/Pictures/enhanced/Image%201.jpg" alt="A computer ready for learning and creative work" width="1160" height="420">
+    </section>
+
+    <section id="popular" class="reveal">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Popular right now</p>
+                <h2>Start with a course people love</h2>
+            </div>
+            <a class="section-head-link" href="{{ url_for('course') }}">View all {{ courses | length }} courses &rarr;</a>
+        </div>
+        <div class="home-courses">
+            {% for item in popular %}
+            <article class="home-course">
+                <img src="{{ item.image }}" alt="{{ item.title }} course" loading="lazy">
+                <div class="home-course-body">
+                    {% if item.badge %}<span class="course-badge">{{ item.badge }}</span>{% endif %}
+                    <h3>{{ item.title }}</h3>
+                    <p class="home-course-meta">{{ item.duration_text }} · {{ item.delivery }}</p>
+                    <p class="course-description">{{ item.description }}</p>
+                    {% if item.next_intake %}
+                    <p class="course-intake">Next start <strong>{{ item.next_intake.start | nice_date }}</strong> · {{ item.next_intake.spots_left }} spots left</p>
+                    {% endif %}
+                    <a class="home-course-link" href="{{ url_for('course') }}#{{ item.slug }}">Learn more<span class="visually-hidden"> about {{ item.title }}</span> &rarr;</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="how-it-works" class="steps-section reveal">
+        <p class="eyebrow">How it works</p>
+        <h2>From curious to qualified in three steps</h2>
+        <ol class="steps">
+            <li class="step">
+                <span class="step-number" aria-hidden="true">1</span>
+                <h3>Find your course</h3>
+                <p>Browse all courses, compare two side by side, or take our 6-question quiz to get a recommendation.</p>
+                <a href="{{ url_for('quiz') }}">Take the quiz &rarr;</a>
+            </li>
+            <li class="step">
+                <span class="step-number" aria-hidden="true">2</span>
+                <h3>Pick a start date</h3>
+                <p>Every course starts on the first day of each quarter (1 January, 1 April, 1 July and 1 October) with a limited number of spots. Choose the one that suits you and enroll online.</p>
+                <a href="{{ url_for('course') }}">See start dates &rarr;</a>
+            </li>
+            <li class="step">
+                <span class="step-number" aria-hidden="true">3</span>
+                <h3>Learn and get certified</h3>
+                <p>Study online, self-paced or with an instructor, and receive a certificate when you complete your course.</p>
+                <a href="{{ url_for('faq') }}">Read the FAQ &rarr;</a>
+            </li>
+        </ol>
+    </section>
+
+    <section id="platform" class="reveal">
+        <p class="eyebrow">Why Cyber Education</p>
+        <h2>A learning experience built around you</h2>
+        <p>Everything you need to move from curiosity to confident, job-ready skills.</p>
+        <div class="card-container">
+            <article class="card"><div class="card-body"><span class="feature-icon" aria-hidden="true">01</span><h3 class="card-title">Learn on your time</h3><p class="card-text">Flexible online courses let you fit learning around work and life.</p></div></article>
+            <article class="card"><div class="card-body"><span class="feature-icon" aria-hidden="true">02</span><h3 class="card-title">Learn by doing</h3><p class="card-text">Build practical knowledge with guided lessons and useful projects.</p></div></article>
+            <article class="card"><div class="card-body"><span class="feature-icon" aria-hidden="true">03</span><h3 class="card-title">Keep moving forward</h3><p class="card-text">Get career resources and a certificate when you complete your course.</p></div></article>
+        </div>
+    </section>
+
+    <section class="split-section reveal">
+        <img src="/static/Pictures/enhanced/Image%20of%20students.jpg" alt="Students learning together" loading="lazy">
+        <div>
+            <p class="eyebrow">A community of learners</p>
+            <h2>Learn with people who know the industry</h2>
+            <p>Our lecturers bring real-world experience to every lesson, from machine learning and data science to cyber security and web development.</p>
+            <ul class="check-list">
+                <li>Self-paced and instructor-led options</li>
+                <li>Courses for complete beginners and experienced coders</li>
+                <li>Practical projects and real-life case studies</li>
+            </ul>
+            <a class="btn btn-primary" href="{{ url_for('about') }}">Meet the team</a>
+        </div>
+    </section>
+
+    {% if highlights %}
+    <section class="home-reviews reveal">
+        <div class="section-head">
+            <div>
+                <p class="eyebrow">Learner stories</p>
+                <h2>What our learners say</h2>
+            </div>
+            {% if rating_summary %}
+            <p class="home-rating"><strong>{{ rating_summary.average }}</strong> <span class="testimonial-rating" aria-hidden="true">★★★★★</span> from {{ rating_summary.count }} ratings</p>
+            {% endif %}
+        </div>
+        <div class="home-review-grid">
+            {% for item in highlights %}
+            <figure class="home-review">
+                <blockquote>“{{ item.message }}”</blockquote>
+                <figcaption><strong>{{ item.name }}</strong> <span class="testimonial-rating" aria-label="{{ item.rating }} out of 5 stars">{{ '★' * item.rating }}</span></figcaption>
+            </figure>
+            {% endfor %}
+        </div>
+        <a class="section-head-link" href="{{ url_for('testimonials_page') }}">Read all testimonials &rarr;</a>
+    </section>
+    {% endif %}
+
+    <section class="home-faq reveal">
+        <div>
+            <p class="eyebrow">Good to know</p>
+            <h2>Questions? We've got answers.</h2>
+            <p>The questions learners ask us most, answered in one place.</p>
+            <a class="btn btn-outline-primary" href="{{ url_for('faq') }}">Visit the FAQ</a>
+        </div>
+        <ul class="home-faq-list">
+            <li><a href="{{ url_for('faq') }}#classes">When do the classes take place?</a></li>
+            <li><a href="{{ url_for('faq') }}#experience">Do I need experience before I start?</a></li>
+            <li><a href="{{ url_for('faq') }}#accreditation">Is this an accredited course?</a></li>
+            <li><a href="{{ url_for('faq') }}#discounts">Are there discounts for returning students?</a></li>
+        </ul>
+    </section>
+
+    <section class="cta-band reveal">
+        <h2>Ready to start learning?</h2>
+        <p>Find the course that fits your goals and secure your spot for the next start date.</p>
+        <div class="hero-actions">
+            <a class="btn btn-light" href="{{ url_for('course') }}">Browse courses</a>
+            <a class="btn btn-outline-light" href="{{ url_for('contact') }}">Talk to us</a>
+        </div>
+    </section>
+{% endblock %}
