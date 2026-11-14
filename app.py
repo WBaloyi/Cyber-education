@@ -4,11 +4,12 @@ import re
 import secrets
 import sqlite3
 import time
-from datetime import date
+from datetime import date, timedelta
+from urllib.parse import urlencode
 from functools import wraps
 from pathlib import Path
 
-from flask import (Flask, abort, jsonify, redirect, render_template, request, send_from_directory,
+from flask import (Flask, Response, abort, jsonify, redirect, render_template, request, send_from_directory,
                    session, url_for)
 
 from database import close_db, get_db, init_db
@@ -94,13 +95,12 @@ NAV_ITEMS = [
     ("home", "Home"),
     ("about", "About us"),
     ("course", "Courses"),
-    ("quiz", "Course quiz"),
     ("testimonials_page", "Testimonials"),
     ("faq", "FAQ"),
     ("contact", "Contact us"),
 ]
 # Pages that highlight a nav item other than their own.
-NAV_SECTIONS = {"enroll": "course", "compare": "course"}
+NAV_SECTIONS = {"enroll": "course", "compare": "course", "course_detail": "course", "quiz": "course"}
 
 
 @app.context_processor
@@ -110,6 +110,19 @@ def template_globals():
         "nav_items": NAV_ITEMS,
         "active_nav": NAV_SECTIONS.get(request.endpoint, request.endpoint),
         "node_api_url": NODE_API_URL,
+        "footer": footer_info,
+    }
+
+
+def footer_info():
+    """Course links and the next start date for the site footer (read from the JSON file, no database)."""
+    with COURSES_FILE.open("r", encoding="utf-8") as file:
+        titles = [item["title"] for item in json.load(file)]
+    next_start = upcoming_quarter_starts(date.today(), 1)[0]
+    return {
+        "courses": [{"title": title, "slug": slugify(title)} for title in titles],
+        "next_start": format_date(next_start),
+        "year": date.today().year,
     }
 
 
@@ -194,6 +207,36 @@ def length_group(weeks):
     return "medium" if weeks <= 16 else "long"
 
 
+def outline_modules(course):
+    """'Intro, Basics, Functions and Data structures' -> ['Intro', 'Basics', 'Functions', 'Data structures']."""
+    outline = split_detail(course.get("courseOutline", ""))[1]
+    parts = [part.strip() for part in outline.split(",") if part.strip()]
+    if parts and " and " in parts[-1]:
+        head, _, tail = parts[-1].rpartition(" and ")
+        parts[-1:] = [head.strip(), tail.strip()]
+    return parts
+
+
+def parse_iso_date(text):
+    try:
+        return date.fromisoformat(text) if re.fullmatch(r"\d{4}-\d{2}-\d{2}", text or "") else None
+    except ValueError:
+        return None
+
+
+def calendar_links(course_info, start):
+    """Download link for an .ics file and a Google Calendar link for a course start date."""
+    end = start + timedelta(days=1)
+    google = "https://calendar.google.com/calendar/render?" + urlencode({
+        "action": "TEMPLATE",
+        "text": f"{course_info['title']} starts (Cyber Education)",
+        "dates": f"{start:%Y%m%d}/{end:%Y%m%d}",
+        "details": f"Week 1 of {course_info['title']} opens today. Course duration: {course_info['duration_text']}.",
+    })
+    ics = url_for("course_calendar", slug=course_info["slug"], start=start.isoformat())
+    return {"ics": ics, "google": google}
+
+
 # ---------- Static script and data routes ----------
 
 @app.get("/Java.js")
@@ -213,14 +256,29 @@ def course_data():
 
 # ---------- Pages ----------
 
+# Short profile for each lecturer on the About page. Edit the text here.
+LECTURER_PROFILES = {
+    "Lesile Kalbling": ("AI and programming", "Makes machine learning approachable, starting from Python basics."),
+    "Cecilia Palmer": ("Web", "Teaches front-end and full-stack development through real projects."),
+    "Robyn Ally": ("Security", "Focuses on threats, risk and practical network defence."),
+    "Karabo Motaung": ("Data", "Turns large datasets into clear insights with Python, R and Tableau."),
+}
+
+
 def lecturers_from(courses):
-    """{lecturer name: [course titles]} in the order lecturers first appear."""
+    """Lecturers in the order they first appear, each with the courses they teach and a short profile."""
     lecturers = {}
     for item in courses:
         name = split_detail(item.get("lecturer", ""))[1]
-        if name:
-            lecturers.setdefault(name, []).append(item["title"])
-    return lecturers
+        if not name:
+            continue
+        if name not in lecturers:
+            area, bio = LECTURER_PROFILES.get(name, ("", ""))
+            lecturers[name] = {"name": name, "area": area, "bio": bio, "courses": [],
+                               "initials": name.split()[0][0] + name.split()[-1][0],
+                               "avatar": len(lecturers) % 4 + 1}
+        lecturers[name]["courses"].append({"title": item["title"], "slug": item["slug"]})
+    return list(lecturers.values())
 
 
 @app.route('/')
@@ -229,7 +287,7 @@ def home():
     courses.sort(key=lambda item: not item.get("featured"))
     testimonials = approved_testimonials()
     highlights = [row for row in reversed(testimonials) if row["rating"] and row["rating"] >= 4][:2]
-    return render_template('Index.html', courses=courses, popular=courses[:3], highlights=highlights,
+    return render_template('Index.html', courses=courses, highlights=highlights,
                            rating_summary=rating_summary(testimonials))
 
 
@@ -266,10 +324,12 @@ def api_courses():
         "delivery": item["delivery"],
         "self_paced": item["self_paced"],
         "details": [{"label": label.rstrip(":"), "value": value} for label, value in item["details"]],
-        "intakes": [{**intake, "label": format_date(intake["start"])} for intake in item["upcoming_intakes"]],
-        "next_intake": ({**item["next_intake"], "label": format_date(item["next_intake"]["start"])}
+        "intakes": [{"start": intake["start"], "label": format_date(intake["start"]), "full": intake["full"]}
+                    for intake in item["upcoming_intakes"]],
+        "next_intake": ({"start": item["next_intake"]["start"], "label": format_date(item["next_intake"]["start"])}
                         if item["next_intake"] else None),
         "enroll_url": url_for('enroll', slug=item["slug"]),
+        "detail_url": url_for('course_detail', slug=item["slug"]),
     } for item in courses])
 
 
@@ -281,6 +341,46 @@ def compare():
     second = request.args.get("b") if request.args.get("b") in slugs else slugs[1]
     by_slug = {course["slug"]: course for course in courses}
     return render_template('Compare.html', courses=courses, first=by_slug[first], second=by_slug[second])
+
+
+@app.get('/courses/<slug>')
+def course_detail(slug):
+    courses = load_courses()
+    course_info = next((item for item in courses if item["slug"] == slug), None)
+    if course_info is None:
+        abort(404)
+    lecturer = split_detail(course_info.get("lecturer", ""))[1]
+    profile = next((person for person in lecturers_from(courses) if person["name"] == lecturer), None)
+    other_courses = [item for item in courses
+                     if item["slug"] != slug and split_detail(item.get("lecturer", ""))[1] == lecturer]
+    testimonials = approved_testimonials()
+    reviews = [row for row in reversed(testimonials) if row["rating"]][:3]
+    return render_template('CourseDetail.html', course=course_info, modules=outline_modules(course_info),
+                           lecturer=lecturer, profile=profile, other_courses=other_courses, reviews=reviews,
+                           rating_summary=rating_summary(testimonials))
+
+
+@app.get('/courses/<slug>/calendar.ics')
+def course_calendar(slug):
+    """An all-day calendar event for the course start date."""
+    course_info = find_course(slug)
+    start = parse_iso_date(request.args.get("start", ""))
+    if course_info is None or start is None:
+        abort(404)
+    end = start + timedelta(days=1)
+    lines = [
+        "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Cyber Education//Course start//EN", "CALSCALE:GREGORIAN",
+        "BEGIN:VEVENT",
+        f"UID:{slug}-{start:%Y%m%d}@cybereducation",
+        f"DTSTAMP:{date.today():%Y%m%d}T000000Z",
+        f"DTSTART;VALUE=DATE:{start:%Y%m%d}",
+        f"DTEND;VALUE=DATE:{end:%Y%m%d}",
+        f"SUMMARY:{course_info['title']} starts (Cyber Education)",
+        f"DESCRIPTION:Week 1 of {course_info['title']} opens today.",
+        "END:VEVENT", "END:VCALENDAR",
+    ]
+    return Response("\r\n".join(lines) + "\r\n", mimetype="text/calendar",
+                    headers={"Content-Disposition": f'attachment; filename="{slug}-{start:%Y-%m-%d}.ics"'})
 
 
 @app.route('/courses/<slug>/enroll', methods=['GET', 'POST'])
@@ -324,13 +424,27 @@ def enroll(slug):
                 db.execute("ROLLBACK")
                 raise
             if not errors:
+                session["last_enrollment"] = {"slug": slug, "start": intake["start"],
+                                              "email": values["email"].lower()}
                 return redirect(url_for('enroll', slug=slug, enrolled=intake["start"]))
             course_info = find_course(slug)  # refresh spots left
 
-    enrolled = request.args.get("enrolled", "")
-    enrolled_label = format_date(enrolled) if re.fullmatch(r"\d{4}-\d{2}-\d{2}", enrolled) else ""
+    confirmation = None
+    start = parse_iso_date(request.args.get("enrolled", ""))
+    if start and not errors:
+        last = session.get("last_enrollment") or {}
+        days_left = (start - date.today()).days
+        confirmation = {
+            "start": start,
+            "start_long": f"{start:%A}, {start.day} {start:%B %Y}",
+            "start_label": f"{start.day} {start:%B %Y}",
+            "days_left": days_left,
+            "welcome_by": format_date((start - timedelta(days=14)).isoformat()) if days_left > 14 else "",
+            "email": last.get("email") if last.get("slug") == slug and last.get("start") == start.isoformat() else "",
+            **calendar_links(course_info, start),
+        }
     return render_template('Enroll.html', course=course_info, errors=errors, values=values,
-                           enrolled_label=enrolled_label), (400 if errors else 200)
+                           confirmation=confirmation), (400 if errors else 200)
 
 
 @app.get('/courses/<slug>/enrol')
@@ -361,7 +475,9 @@ def rating_summary(testimonials):
 
 def render_testimonials(errors=None, values=None, status=200):
     testimonials = approved_testimonials()
-    return render_template('Testimonials.html', testimonials=testimonials, rating_summary=rating_summary(testimonials),
+    # Newest first, so a just-submitted testimonial is the first card in the carousel.
+    return render_template('Testimonials.html', testimonials=list(reversed(testimonials)),
+                           rating_summary=rating_summary(testimonials),
                            errors=errors or {}, values=values or {},
                            limits={"name": TESTIMONIAL_NAME_MAX, "message_min": TESTIMONIAL_MESSAGE_MIN,
                                    "message": TESTIMONIAL_MESSAGE_MAX}), status
@@ -376,7 +492,7 @@ def testimonials_page():
 def submit_testimonial():
     values = {key: request.form.get(key, "").strip() for key in ("name", "message", "rating")}
     if request.form.get("website"):  # honeypot field, hidden from people
-        return redirect(url_for('testimonials_page', sent=1, _anchor='share'))
+        return redirect(url_for('testimonials_page', sent=1, _anchor='testimonials'))
 
     errors = {}
     if not 2 <= len(values["name"]) <= TESTIMONIAL_NAME_MAX:
@@ -389,10 +505,11 @@ def submit_testimonial():
     if errors:
         return render_testimonials(errors, values, 400)
 
-    # New testimonials stay hidden until an admin approves them.
-    get_db().execute("INSERT INTO testimonials (name, message, rating, approved) VALUES (?, ?, ?, 0)",
+    # New testimonials are published straight away and appear first in the carousel.
+    # Admins can still hide or delete them from the dashboard.
+    get_db().execute("INSERT INTO testimonials (name, message, rating, approved) VALUES (?, ?, ?, 1)",
                      (values["name"], values["message"], int(values["rating"])))
-    return redirect(url_for('testimonials_page', sent=1, _anchor='share'))
+    return redirect(url_for('testimonials_page', sent=1, _anchor='testimonials'))
 
 
 @app.get('/api/testimonials')

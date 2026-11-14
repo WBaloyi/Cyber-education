@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" role="img" aria-labelledby="t d">
+  <title id="t">Learning with industry experts</title>
+  <desc id="d">A lecturer presents a chart on a large screen during a live online class while three learners join from their laptops and ask questions.</desc>
+  <defs>
+    <linearGradient id="lt-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e9f0fb"/>
+      <stop offset="1" stop-color="#ede7fe"/>
+    </linearGradient>
+    <linearGradient id="lt-screen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14336b"/>
+      <stop offset="1" stop-color="#2453a0"/>
+    </linearGradient>
+    <filter id="lt-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#14336b" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="450" rx="28" fill="url(#lt-bg)"/>
+  <circle cx="540" cy="60" r="96" fill="#b39dfa" opacity="0.12"/>
+  <circle cx="40" cy="420" r="120" fill="#2453a0" opacity="0.08"/>
+
+  <!-- Presentation screen -->
+  <g filter="url(#lt-shadow)">
+    <rect x="150" y="48" width="300" height="190" rx="16" fill="#ffffff"/>
+  </g>
+  <rect x="164" y="62" width="272" height="162" rx="10" fill="url(#lt-screen)"/>
+  <!-- chart on screen -->
+  <rect x="184" y="82" width="110" height="10" rx="5" fill="#9fb8e0"/>
+  <rect x="184" y="100" width="70" height="8" rx="4" fill="#5b7fc2"/>
+  <g fill="#b39dfa">
+    <rect x="190" y="176" width="22" height="32" rx="4"/>
+    <rect x="222" y="158" width="22" height="50" rx="4"/>
+    <rect x="254" y="140" width="22" height="68" rx="4"/>
+  </g>
+  <rect x="286" y="122" width="22" height="86" rx="4" fill="#ffffff"/>
+  <path d="M188 160 L232 138 L268 124 L312 100" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+  <!-- code lines on screen -->
+  <g fill="#9fb8e0">
+    <rect x="334" y="130" width="84" height="8" rx="4"/>
+    <rect x="334" y="148" width="60" height="8" rx="4" fill="#b39dfa"/>
+    <rect x="344" y="166" width="70" height="8" rx="4"/>
+    <rect x="344" y="184" width="46" height="8" rx="4"/>
+    <rect x="334" y="202" width="78" height="8" rx="4"/>
+  </g>
+  <rect x="332" y="80" width="88" height="30" rx="15" fill="#b39dfa"/>
+  <text x="376" y="100" text-anchor="middle" font-family="Plus Jakarta Sans, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e1240">Week 3</text>
+  <rect x="280" y="238" width="40" height="22" fill="#c9d7ea"/>
+  <rect x="240" y="258" width="120" height="8" rx="4" fill="#aebfd6"/>
+
+  <!-- Lecturer pointing at the screen -->
+  <g>
+    <circle cx="488" cy="196" r="20" fill="#8d5a3b"/>
+    <path d="M468 194c0-14 9-24 20-24s20 10 20 24c-6-6-12-9-20-9s-14 3-20 9z" fill="#142238"/>
+    <path d="M454 300c2-44 16-70 34-70s32 26 34 70z" fill="#2453a0"/>
+    <path d="M466 248l-38-34" stroke="#2453a0" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="426" cy="212" r="8" fill="#8d5a3b"/>
+    <path d="M478 236l10 14 10-14z" fill="#ffffff"/>
+  </g>
+  <g filter="url(#lt-shadow)">
+    <rect x="436" y="112" width="152" height="38" rx="19" fill="#14336b"/>
+  </g>
+  <circle cx="458" cy="131" r="9" fill="#b39dfa"/>
+  <path d="M454 131l3 3 6-7" fill="none" stroke="#14336b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="474" y="136" font-family="Plus Jakarta Sans, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" fill="#ffffff">Industry expert</text>
+
+  <!-- Learners with laptops -->
+  <g filter="url(#lt-shadow)">
+    <rect x="36" y="300" width="528" height="118" rx="20" fill="#ffffff"/>
+  </g>
+  <g>
+    <!-- learner 1 -->
+    <circle cx="112" cy="336" r="15" fill="#c68b62"/>
+    <path d="M97 334c0-11 7-18 15-18s15 7 15 18c-4-4-9-6-15-6s-11 2-15 6z" fill="#14336b"/>
+    <path d="M86 392c2-26 12-40 26-40s24 14 26 40z" fill="#b39dfa"/>
+    <path d="M70 380h84l-8 20H78z" fill="#142238"/>
+    <rect x="80" y="364" width="64" height="18" rx="3" fill="#2453a0"/>
+    <!-- learner 2 -->
+    <circle cx="300" cy="336" r="15" fill="#f0c7a4"/>
+    <path d="M285 334c0-11 7-18 15-18s15 7 15 18c-4-4-9-6-15-6s-11 2-15 6z" fill="#9a5c00"/>
+    <path d="M283 330c-2 8 0 18 3 22l3-14zM317 330c2 8 0 18-3 22l-3-14z" fill="#9a5c00"/>
+    <path d="M274 392c2-26 12-40 26-40s24 14 26 40z" fill="#2453a0"/>
+    <path d="M258 380h84l-8 20h-68z" fill="#142238"/>
+    <rect x="268" y="364" width="64" height="18" rx="3" fill="#b39dfa"/>
+    <!-- learner 3 -->
+    <circle cx="488" cy="336" r="15" fill="#6b4226"/>
+    <path d="M474 332c1-9 7-14 14-14s13 5 14 14c-4-2-9-3-14-3s-10 1-14 3z" fill="#142238"/>
+    <path d="M462 392c2-26 12-40 26-40s24 14 26 40z" fill="#14336b"/>
+    <path d="M446 380h84l-8 20h-68z" fill="#142238"/>
+    <rect x="456" y="364" width="64" height="18" rx="3" fill="#2453a0"/>
+  </g>
+
+  <!-- Chat bubbles -->
+  <g filter="url(#lt-shadow)">
+    <path d="M150 274h108a12 12 0 0 1 12 12v8a12 12 0 0 1-12 12h-86l-14 10 2-10h-10a12 12 0 0 1-12-12v-8a12 12 0 0 1 12-12z" fill="#ffffff"/>
+  </g>
+  <text x="206" y="295" text-anchor="middle" font-family="Plus Jakarta Sans, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" fill="#142238">Great question!</text>
+  <g filter="url(#lt-shadow)">
+    <path d="M34 220h120a12 12 0 0 1 12 12v8a12 12 0 0 1-12 12H66l-12 12 2-12H34a12 12 0 0 1-12-12v-8a12 12 0 0 1 12-12z" fill="#b39dfa"/>
+  </g>
+  <text x="94" y="241" text-anchor="middle" font-family="Plus Jakarta Sans, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e1240">How does it work?</text>
+</svg>

@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{% block description %}Learn practical, career-ready technology skills with Cyber Education.{% endblock %}">
     <title>{% block title %}Cyber Education{% endblock %}</title>
+    <script>
+        // Apply the saved theme (or the device setting) before the page draws, so it never flashes white.
+        (function () {
+            var theme = null;
+            try { theme = localStorage.getItem('theme'); } catch (e) {}
+            if (theme !== 'light' && theme !== 'dark') {
+                theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.setAttribute('data-bs-theme', theme);
+        })();
+    </script>
     <link rel="icon" href="/static/Pictures/Wesbsite%20icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,7 +25,7 @@
     <link rel="stylesheet" href="/static/Style.css">
     {% block head %}{% endblock %}
 </head>
-<body class="bg-custom">
+<body class="bg-custom page-{{ (request.endpoint or 'error') | replace('_', '-') }}">
     <a class="skip-link" href="#main">Skip to content</a>
     <header>
         <!-- Bootstrap navbar: collapses into a menu button below the lg breakpoint -->
@@ -21,6 +33,15 @@
             <a class="navbar-brand site-brand" href="{{ url_for('home') }}" aria-label="Cyber Education home">
                 <img src="/static/Pictures/Website%20icon%20transparent.png" alt="Cyber Education">
             </a>
+            <button class="theme-toggle order-lg-last ms-lg-2" type="button" id="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode">
+                <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+                </svg>
+                <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+                </svg>
+            </button>
             <button class="navbar-toggler nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#site-nav-links"
                     aria-expanded="false" aria-controls="site-nav-links" aria-label="Toggle navigation">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
@@ -45,7 +66,40 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer><p class="mb-0">&copy; 2025 CyberEducation.co.za</p></footer>
+    {% set info = footer() %}
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <a class="footer-brand" href="{{ url_for('home') }}" aria-label="Cyber Education home">
+                        <img src="/static/Pictures/Website%20icon%20transparent.png" alt="Cyber Education" width="150" height="53" loading="lazy">
+                    </a>
+                    <p>Practical, career-ready technology courses you can study online from anywhere.</p>
+                </div>
+                <nav class="col-sm-6 col-lg-3" aria-label="Courses">
+                    <h2 class="footer-heading">Courses</h2>
+                    <ul class="footer-links">
+                        {% for item in info.courses %}
+                        <li><a href="{{ url_for('course_detail', slug=item.slug) }}">{{ item.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </nav>
+                <address class="col-sm-6 col-lg-4 mb-0">
+                    <h2 class="footer-heading">Get in touch</h2>
+                    <ul class="footer-links">
+                        <li><a href="mailto:CyberEducation@gmail.com">CyberEducation@gmail.com</a></li>
+                        <li><a href="tel:+27114207628">(011) 420 7628</a></li>
+                        <li>42 Torquay Rd, Rosebank, Johannesburg, 2140</li>
+                        <li>We reply within one working day.</li>
+                    </ul>
+                </address>
+            </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; {{ info.year }} Cyber Education. All rights reserved.</p>
+                <a href="#main" class="footer-top">Back to top &uarr;</a>
+            </div>
+        </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/Java.js"></script>
     {% block scripts %}{% endblock %}

@@ -143,7 +143,7 @@
                 }
                 const link = document.getElementById('quiz-saved-link');
                 link.textContent = saved.title;
-                link.href = `/courses#${saved.slug}`;
+                link.href = `/courses/${saved.slug}`;
                 const savedOn = new Date(saved.savedAt);
                 document.getElementById('quiz-saved-date').textContent = Number.isNaN(savedOn.getTime())
                     ? '' : `(saved ${savedOn.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })})`;
@@ -236,7 +236,7 @@
 
                 const actions = element('div', 'quiz-result-actions');
                 const viewLink = element('a', 'btn btn-primary', 'View this course');
-                viewLink.href = `/courses#${slug}`;
+                viewLink.href = `/courses/${slug}`;
                 const askLink = element('a', 'btn btn-outline-primary', 'Ask us about it');
                 askLink.href = `/contact?course=${encodeURIComponent(title)}`;
                 const retake = element('button', 'btn btn-link quiz-retake', 'Retake the quiz');
@@ -268,7 +268,7 @@
                 if (runnerUp) {
                     const alsoConsider = element('p', 'quiz-result-also', 'Also worth a look: ');
                     const runnerUpLink = element('a', '', runnerUp.title);
-                    runnerUpLink.href = `/courses#${runnerUp.slug}`;
+                    runnerUpLink.href = `/courses/${runnerUp.slug}`;
                     alsoConsider.appendChild(runnerUpLink);
                     body.appendChild(alsoConsider);
                 }

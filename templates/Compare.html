@@ -55,16 +55,6 @@
                     {% endfor %}
                     <tr><th scope="row">About</th><td>{{ first.description }}</td><td>{{ second.description }}</td></tr>
                     <tr>
-                        <th scope="row">Next start</th>
-                        {% for item in [first, second] %}
-                        <td>
-                            {% if item.next_intake %}
-                            <strong>{{ item.next_intake.start | nice_date }}</strong><br>{{ item.next_intake.spots_left }} {{ 'spot' if item.next_intake.spots_left == 1 else 'spots' }} left
-                            {% else %}No open start dates{% endif %}
-                        </td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
                         <td></td>
                         {% for item in [first, second] %}
                         <td>

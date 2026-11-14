@@ -49,13 +49,12 @@
                 {% call question('classes', 'When do the classes take place?', True) %}
                     <p>All courses are fully online, so there's no campus timetable. How you study depends on the course:</p>
                     <table class="faq-table">
-                        <thead><tr><th scope="col">Course</th><th scope="col">Delivery</th><th scope="col">Next start</th></tr></thead>
+                        <thead><tr><th scope="col">Course</th><th scope="col">Delivery</th></tr></thead>
                         <tbody>
                             {% for item in courses %}
                             <tr>
-                                <td><a href="{{ url_for('course') }}#{{ item.slug }}">{{ item.title }}</a></td>
+                                <td><a href="{{ url_for('course_detail', slug=item.slug) }}">{{ item.title }}</a></td>
                                 <td>{{ item.delivery }}</td>
-                                <td>{{ item.next_intake.start | nice_date if item.next_intake else 'To be announced' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -84,7 +83,7 @@
                     {% for item in courses if item.title == 'Data Science' %}
                     <p>{{ item.description }}</p>
                     <p><strong>What you'll cover:</strong> {{ item.details[-1][1] }}</p>
-                    <p><a href="{{ url_for('course') }}#{{ item.slug }}">View the Data Science course &rarr;</a></p>
+                    <p><a href="{{ url_for('course_detail', slug=item.slug) }}">View the Data Science course &rarr;</a></p>
                     {% endfor %}
                 {% endcall %}
 
@@ -97,16 +96,16 @@
                 <h2 id="topic-enrollment-title">Fees &amp; enrollment</h2>
 
                 {% call question('discounts', 'Are there any discounts for returning students?') %}
-                    <p>We love welcoming learners back. Discounts for returning students depend on the course and start date, so <a href="{{ url_for('contact', course='Returning student discount') }}">send us a message</a> with the course you're interested in and we'll tell you what's currently available.</p>
+                    <p>We love welcoming learners back. Discounts for returning students depend on the course, so <a href="{{ url_for('contact', course='Returning student discount') }}">send us a message</a> with the course you're interested in and we'll tell you what's currently available.</p>
                 {% endcall %}
 
                 {% call question('enroll', 'How do I enroll, and are spaces limited?') %}
                     <ol>
                         <li>Choose a course on the <a href="{{ url_for('course') }}">courses page</a> and press <strong>Enroll</strong>.</li>
-                        <li>Pick one of the upcoming start dates. Courses start on the first day of every quarter: 1 January, 1 April, 1 July and 1 October.</li>
+                        <li>Pick the start date that suits you.</li>
                         <li>Fill in your name and email to confirm your spot.</li>
                     </ol>
-                    <p>Each start date has a limited number of spots, and the courses page shows how many are left.</p>
+                    <p>Each start date has a limited number of places, so we recommend enrolling early.</p>
                 {% endcall %}
             </section>
 

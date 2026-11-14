@@ -4,107 +4,133 @@
 {% block description %}Explore flexible online technology courses from Cyber Education.{% endblock %}
 
 {% block content %}
+    {% set delivery_on = filters.delivery.split(',') if filters.delivery else ['self', 'instructor'] %}
+    {% set length_on = filters.length.split(',') if filters.length else ['short', 'medium', 'long'] %}
     <section class="courses-section fade-in">
         <div class="courses-head">
             <div>
                 <h1>Explore our courses</h1>
                 <p class="lead">Choose a flexible, practical course and take your next step in technology.</p>
             </div>
-            <div class="courses-head-links">
-                <a href="{{ url_for('quiz') }}">Not sure? Take the quiz &rarr;</a>
-                <a href="{{ url_for('compare') }}">Compare courses &rarr;</a>
-                <a href="{{ url_for('contact') }}">Ask us about a course &rarr;</a>
+        </div>
+
+        <svg width="0" height="0" class="position-absolute" aria-hidden="true" focusable="false">
+            <defs>
+                <symbol id="i-quiz" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.2" r="1.2" fill="currentColor"/></symbol>
+                <symbol id="i-compare" viewBox="0 0 24 24"><path d="M7 7h12M15 3l4 4-4 4M17 17H5M9 13l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+                <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 10h8M8 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+            </defs>
+        </svg>
+        <div class="row g-3 help-cards">
+            <div class="col-md-4">
+                <a class="help-card help-card--main" href="{{ url_for('quiz') }}">
+                    <span class="help-card-icon"><svg><use href="#i-quiz"></use></svg></span>
+                    <span>
+                        <strong>Not sure where to start?</strong>
+                        <span class="help-card-text">Answer six quick questions and get a course match.</span>
+                        <span class="help-card-go">Take the quiz</span>
+                    </span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a class="help-card" href="{{ url_for('compare') }}">
+                    <span class="help-card-icon"><svg><use href="#i-compare"></use></svg></span>
+                    <span>
+                        <strong>Torn between two?</strong>
+                        <span class="help-card-text">See duration, delivery and outline side by side.</span>
+                        <span class="help-card-go">Compare courses</span>
+                    </span>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a class="help-card" href="{{ url_for('contact') }}">
+                    <span class="help-card-icon"><svg><use href="#i-chat"></use></svg></span>
+                    <span>
+                        <strong>Have a question?</strong>
+                        <span class="help-card-text">Our team usually replies within one working day.</span>
+                        <span class="help-card-go">Ask us about a course</span>
+                    </span>
+                </a>
             </div>
         </div>
 
-        <form class="course-filters row g-3 align-items-end" role="search" aria-label="Filter courses">
-            <div class="col-12 col-md-6 col-lg-5">
-                <label for="course-search" class="form-label">Search</label>
-                <input type="search" class="form-control" id="course-search" name="q" value="{{ filters.q }}" placeholder="e.g. Python, security, data" maxlength="60">
-            </div>
-            <div class="col-6 col-md-3">
-                <label for="course-delivery" class="form-label">Delivery</label>
-                <select class="form-select" id="course-delivery" name="delivery">
-                    <option value="">Any</option>
-                    <option value="self" {% if filters.delivery == 'self' %}selected{% endif %}>Self-paced</option>
-                    <option value="instructor" {% if filters.delivery == 'instructor' %}selected{% endif %}>Instructor-paced</option>
-                </select>
-            </div>
-            <div class="col-6 col-md-3 col-lg-2">
-                <label for="course-length" class="form-label">Duration</label>
-                <select class="form-select" id="course-length" name="length">
-                    <option value="">Any</option>
-                    <option value="short" {% if filters.length == 'short' %}selected{% endif %}>Up to 12 weeks</option>
-                    <option value="medium" {% if filters.length == 'medium' %}selected{% endif %}>13–16 weeks</option>
-                    <option value="long" {% if filters.length == 'long' %}selected{% endif %}>17+ weeks</option>
-                </select>
-            </div>
-            <div class="col-12 col-lg-2">
-                <button type="button" class="btn btn-outline-primary w-100" id="course-filter-reset">Clear filters</button>
-            </div>
-        </form>
-        <p class="course-count" id="course-count" role="status" aria-live="polite">Loading courses…</p>
+        <div class="row g-4 align-items-start">
+            <!-- Filters (Bootstrap form controls); the list updates as you type or tick, without reloading -->
+            <aside class="col-lg-3">
+                <form class="course-sidebar" role="search" aria-label="Filter courses">
+                    <label for="course-search" class="visually-hidden">Search courses</label>
+                    <input type="search" class="form-control" id="course-search" name="q" value="{{ filters.q }}" placeholder="Search courses…" maxlength="60">
 
-        <div id="course-list" class="row g-4" aria-busy="true">
-            <div class="col-12 text-center py-5" id="course-loading">
-                <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading courses…</span></div>
-            </div>
-        </div>
-        <div class="alert alert-warning mt-3" id="course-error" role="alert" hidden>
-            We couldn't load the courses. Please check your connection and <a href="{{ url_for('course') }}">reload the page</a>.
-        </div>
-        <p class="course-empty" id="course-empty" hidden>No courses match those filters. Try clearing them or <a href="{{ url_for('quiz') }}">take the quiz</a>.</p>
+                    <fieldset>
+                        <legend>Delivery</legend>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="delivery-self" name="delivery" value="self" {% if 'self' in delivery_on %}checked{% endif %}>
+                            <label class="form-check-label" for="delivery-self">Self-paced</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="delivery-instructor" name="delivery" value="instructor" {% if 'instructor' in delivery_on %}checked{% endif %}>
+                            <label class="form-check-label" for="delivery-instructor">Instructor-paced</label>
+                        </div>
+                    </fieldset>
 
-        <noscript>
-            <ul class="list-unstyled mt-3">
-                {% for item in courses %}
-                <li><a href="{{ url_for('enroll', slug=item.slug) }}">{{ item.title }}</a> · {{ item.duration_text }} · {{ item.delivery }}</li>
-                {% endfor %}
-            </ul>
-        </noscript>
-    </section>
+                    <fieldset>
+                        <legend>Duration</legend>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="length-short" name="length" value="short" {% if 'short' in length_on %}checked{% endif %}>
+                            <label class="form-check-label" for="length-short">Up to 12 weeks</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="length-medium" name="length" value="medium" {% if 'medium' in length_on %}checked{% endif %}>
+                            <label class="form-check-label" for="length-medium">13–16 weeks</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="length-long" name="length" value="long" {% if 'long' in length_on %}checked{% endif %}>
+                            <label class="form-check-label" for="length-long">17+ weeks</label>
+                        </div>
+                    </fieldset>
 
-    <!-- Course details modal (Bootstrap). Filled in by JavaScript when it opens. -->
-    <div class="modal fade" id="course-modal" tabindex="-1" aria-labelledby="course-modal-title" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content course-modal">
-                <img class="course-modal-img" id="course-modal-img" src="" alt="">
-                <div class="modal-header">
-                    <div>
-                        <p class="course-tile-duration mb-1" id="course-modal-meta"></p>
-                        <h2 class="modal-title fs-3" id="course-modal-title"></h2>
+                    <p class="course-count" id="course-count" role="status" aria-live="polite">Loading courses…</p>
+                    <button type="button" class="btn btn-outline-primary w-100" id="course-filter-reset">Clear filters</button>
+                </form>
+            </aside>
+
+            <div class="col-lg-9">
+                <div id="course-list" class="course-list" aria-busy="true">
+                    <div class="text-center py-5" id="course-loading">
+                        <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading courses…</span></div>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p id="course-modal-description"></p>
-                    <ul class="course-meta" id="course-modal-details"></ul>
-                    <h3 class="fs-6 mt-4">Upcoming start dates</h3>
-                    <ul class="list-group" id="course-modal-intakes"></ul>
+                <div class="alert alert-warning" id="course-error" role="alert" hidden>
+                    We couldn't load the courses. Please check your connection and <a href="{{ url_for('course') }}">reload the page</a>.
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
-                    <a class="btn btn-primary" id="course-modal-enroll" href="#">Enroll</a>
-                </div>
+                <p class="course-empty" id="course-empty" hidden>No courses match those filters. Try clearing them or <a href="{{ url_for('quiz') }}">take the quiz</a>.</p>
+
+                <noscript>
+                    <ul class="list-unstyled">
+                        {% for item in courses %}
+                        <li><a href="{{ url_for('course_detail', slug=item.slug) }}">{{ item.title }}</a> · {{ item.duration_text }} · {{ item.delivery }}</li>
+                        {% endfor %}
+                    </ul>
+                </noscript>
             </div>
         </div>
-    </div>
+    </section>
 {% endblock %}
 
 {% block scripts %}
     <script>
         (() => {
             const API_URL = '{{ url_for("api_courses") }}';
-            const REFRESH_MS = 60000; // keep "spots left" up to date without reloading the page
+            const REFRESH_MS = 60000; // keep course data up to date without reloading the page
 
+            const form = document.querySelector('.course-sidebar');
             const list = document.getElementById('course-list');
             const search = document.getElementById('course-search');
-            const delivery = document.getElementById('course-delivery');
-            const length = document.getElementById('course-length');
+            const deliveryBoxes = [...form.querySelectorAll('input[name="delivery"]')];
+            const lengthBoxes = [...form.querySelectorAll('input[name="length"]')];
             const count = document.getElementById('course-count');
             const empty = document.getElementById('course-empty');
             const errorBox = document.getElementById('course-error');
-            const modalElement = document.getElementById('course-modal');
             let courses = [];
             let openedFromHash = false;
 
@@ -115,65 +141,62 @@
                 if (text !== undefined) node.textContent = text;
                 return node;
             };
-            const spotsText = intake => `${intake.spots_left} ${intake.spots_left === 1 ? 'spot' : 'spots'} left`;
+            const checked = boxes => boxes.filter(box => box.checked).map(box => box.value);
 
-            const courseCard = course => {
-                const col = el('div', 'col-12 col-md-6 col-xl-4 d-flex');
-                const card = el('article', `card course-tile${course.featured ? ' course-tile--featured' : ''}`);
-                card.id = course.slug;
+            // One course as a wide row: picture, details, then the two buttons.
+            const courseRow = course => {
+                const row = el('article', `course-row${course.featured ? ' course-row--featured' : ''}`);
+                row.id = course.slug;
 
-                const img = el('img', 'course-tile-img');
+                const pic = el('a', 'course-row-pic');
+                pic.href = course.detail_url;
+                pic.tabIndex = -1;
+                pic.setAttribute('aria-hidden', 'true');
+                const img = el('img');
                 img.src = course.image;
-                img.alt = `${course.title} course`;
+                img.alt = '';
                 img.loading = 'lazy';
+                pic.append(img);
 
-                const body = el('div', 'card-body course-tile-body');
-                if (course.badge) body.append(el('span', 'badge course-badge', course.badge));
-                body.append(
-                    el('p', 'course-tile-duration', `${course.duration} · ${course.delivery}`),
-                    el('h2', 'card-title course-tile-title', course.title),
-                    el('p', 'card-text course-description', course.description)
-                );
+                const body = el('div', 'course-row-body');
+                if (course.badge) body.append(el('span', 'course-row-badge', course.badge));
+                const title = el('h2', 'course-row-title');
+                const link = el('a', '', course.title);
+                link.href = course.detail_url;
+                title.append(link);
 
-                const intake = el('p', 'course-intake');
-                if (course.next_intake) {
-                    intake.append('Next start: ', el('strong', '', course.next_intake.label), ` · ${spotsText(course.next_intake)}`);
-                } else {
-                    intake.textContent = 'No open start dates right now';
-                }
+                const facts = [course.duration, course.delivery];
+                if (!course.next_intake) facts.push('Not open for enrollment right now');
 
-                const actions = el('div', 'course-actions');
-                const details = el('button', 'course-toggle', 'View details');
-                details.type = 'button';
-                details.dataset.bsToggle = 'modal';
-                details.dataset.bsTarget = '#course-modal';
-                details.dataset.slug = course.slug;
-                details.setAttribute('aria-label', `View details for ${course.title}`);
+                body.append(title, el('p', 'course-row-meta', facts.join(' · ')), el('p', 'course-row-text', course.description));
+
+                const actions = el('div', 'course-row-actions');
+                const details = el('a', 'course-btn course-btn--ghost', 'View details');
+                details.href = course.detail_url;
+                details.append(el('span', 'visually-hidden', ` about ${course.title}`));
                 actions.append(details);
                 if (course.next_intake) {
-                    const enroll = el('a', 'course-enroll', 'Enroll');
+                    const enroll = el('a', 'course-btn course-btn--solid', 'Enroll');
                     enroll.href = course.enroll_url;
                     enroll.append(el('span', 'visually-hidden', ` in ${course.title}`));
                     actions.append(enroll);
                 }
 
-                body.append(intake, actions);
-                card.append(img, body);
-                col.append(card);
-                return col;
+                row.append(pic, body, actions);
+                return row;
             };
 
             const matches = course => {
                 const query = search.value.trim().toLowerCase();
                 const text = `${course.title} ${course.description} ${course.outline}`.toLowerCase();
                 return (!query || text.includes(query))
-                    && (!delivery.value || course.self_paced === (delivery.value === 'self'))
-                    && (!length.value || course.length_group === length.value);
+                    && checked(deliveryBoxes).includes(course.self_paced ? 'self' : 'instructor')
+                    && checked(lengthBoxes).includes(course.length_group);
             };
 
             const render = () => {
                 const shown = courses.filter(matches);
-                list.replaceChildren(...shown.map(courseCard));
+                list.replaceChildren(...shown.map(courseRow));
                 list.setAttribute('aria-busy', 'false');
                 count.textContent = `Showing ${shown.length} of ${courses.length} courses`;
                 empty.hidden = shown.length > 0 || courses.length === 0;
@@ -181,8 +204,10 @@
                 // Keep the filters in the address bar so the view can be shared.
                 const params = new URLSearchParams();
                 if (search.value.trim()) params.set('q', search.value.trim());
-                if (delivery.value) params.set('delivery', delivery.value);
-                if (length.value) params.set('length', length.value);
+                const delivery = checked(deliveryBoxes);
+                const lengths = checked(lengthBoxes);
+                if (delivery.length < deliveryBoxes.length) params.set('delivery', delivery.join(','));
+                if (lengths.length < lengthBoxes.length) params.set('length', lengths.join(','));
                 history.replaceState(null, '', (params.toString() ? `?${params}` : location.pathname) + location.hash);
             };
 
@@ -204,56 +229,20 @@
                 }
             };
 
-            // Fill the Bootstrap modal with the chosen course.
-            modalElement.addEventListener('show.bs.modal', event => {
-                const slug = event.relatedTarget?.dataset.slug || modalElement.dataset.slug;
-                const course = courses.find(item => item.slug === slug);
-                if (!course) return;
-                document.getElementById('course-modal-img').src = course.image;
-                document.getElementById('course-modal-img').alt = `${course.title} course`;
-                document.getElementById('course-modal-meta').textContent = `${course.duration} · ${course.delivery}`;
-                document.getElementById('course-modal-title').textContent = course.title;
-                document.getElementById('course-modal-description').textContent = course.description;
-
-                document.getElementById('course-modal-details').replaceChildren(...course.details.map(detail => {
-                    const item = el('li');
-                    if (detail.label) item.append(el('strong', '', `${detail.label}: `));
-                    item.append(detail.value);
-                    return item;
-                }));
-
-                const intakes = course.intakes.length ? course.intakes.map(intake => {
-                    const item = el('li', 'list-group-item d-flex justify-content-between align-items-center');
-                    item.append(el('span', '', intake.label),
-                        el('span', `badge rounded-pill ${intake.full ? 'text-bg-danger' : 'text-bg-light'}`,
-                            intake.full ? 'Full' : spotsText(intake)));
-                    return item;
-                }) : [el('li', 'list-group-item', 'No upcoming start dates.')];
-                document.getElementById('course-modal-intakes').replaceChildren(...intakes);
-
-                const enroll = document.getElementById('course-modal-enroll');
-                enroll.href = course.enroll_url;
-                enroll.hidden = !course.next_intake;
-                enroll.textContent = `Enroll in ${course.title}`;
-            });
-
-            // Links like /courses#machine-learning (from the quiz or home page) open that course.
+            // Old links like /courses#machine-learning go straight to that course's page.
             const openFromHash = () => {
                 if (openedFromHash || !location.hash) return;
-                const slug = decodeURIComponent(location.hash.slice(1));
-                if (!courses.some(item => item.slug === slug)) return;
+                const course = courses.find(item => item.slug === decodeURIComponent(location.hash.slice(1)));
+                if (!course) return;
                 openedFromHash = true;
-                modalElement.dataset.slug = slug;
-                bootstrap.Modal.getOrCreateInstance(modalElement).show();
-                delete modalElement.dataset.slug;
+                location.replace(course.detail_url);
             };
 
-            document.querySelector('.course-filters').addEventListener('submit', event => event.preventDefault());
-            [search, delivery, length].forEach(field => field.addEventListener('input', render));
+            form.addEventListener('submit', event => event.preventDefault());
+            form.addEventListener('input', render);
             document.getElementById('course-filter-reset').addEventListener('click', () => {
                 search.value = '';
-                delivery.value = '';
-                length.value = '';
+                [...deliveryBoxes, ...lengthBoxes].forEach(box => { box.checked = true; });
                 render();
                 search.focus();
             });

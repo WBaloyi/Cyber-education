@@ -87,15 +87,23 @@ app.get('/', (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
+// "Course duration: 12 weeks" -> "12 weeks"
+const afterLabel = text => (typeof text === 'string' && text.includes(':') ? text.split(':').slice(1).join(':').trim() : text || '');
+// "Web development" -> "web-development" (same rule as slugify() in app.py, so links match the Flask pages)
+const slugify = text => String(text).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+// Used by the "Our courses at a glance" strip on the About page.
 app.get('/api/courses', (req, res, next) => {
     try {
         const courses = readJsonArray(coursesFile).map(course => ({
+            slug: slugify(course.title),
             title: course.title,
             description: course.description,
-            duration: course.duration,
-            modeOfDelivery: course.modeOfDelivery,
-            lecturer: course.lecturer,
+            duration: afterLabel(course.duration),
+            delivery: /self/i.test(course.modeOfDelivery || '') ? 'Self-paced' : 'Instructor-paced',
+            lecturer: afterLabel(course.lecturer),
             image: course.image,
+            featured: Boolean(course.featured),
         }));
         return res.json(courses);
     } catch (error) {

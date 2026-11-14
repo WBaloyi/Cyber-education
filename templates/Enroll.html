@@ -4,6 +4,44 @@
 {% block description %}Choose a start date and enroll in {{ course.title }} at Cyber Education.{% endblock %}
 
 {% block content %}
+    {% if confirmation %}
+    <section class="enroll-confirm fade-in" aria-labelledby="confirm-title">
+        <div class="row g-4 align-items-start">
+            <div class="col-lg-8">
+                <span class="badge rounded-pill confirm-badge">&#10003; You're enrolled</span>
+                <h1 class="confirm-title" id="confirm-title">{{ course.title }} starts on {{ confirmation.start_label }}</h1>
+                <p class="confirm-lead">
+                    {% if confirmation.email %}Your spot is reserved for <strong>{{ confirmation.email }}</strong>.
+                    {% else %}Your spot is reserved.{% endif %}
+                    Save the date so you don't miss week 1.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary" href="{{ confirmation.ics }}">Add to calendar (.ics)</a>
+                    <a class="btn btn-outline-primary" href="{{ confirmation.google }}" target="_blank" rel="noopener">Google Calendar</a>
+                </div>
+
+                <h2 class="confirm-next-title">What happens next</h2>
+                <ol class="confirm-steps">
+                    {% if confirmation.welcome_by %}<li>By {{ confirmation.welcome_by }}: we'll send your login details and reading list.</li>{% endif %}
+                    <li>{{ confirmation.start | string | nice_date }}: week 1 of {{ course.title }} opens.</li>
+                    <li>Questions before then? <a href="{{ url_for('contact', course=course.title) }}">Contact us</a> or read the <a href="{{ url_for('faq') }}">FAQ</a>.</li>
+                </ol>
+                <p class="mt-3 mb-0"><a href="{{ url_for('course') }}">&larr; Back to all courses</a></p>
+            </div>
+            <div class="col-lg-4">
+                <div class="confirm-countdown">
+                    <p class="eyebrow">{% if confirmation.days_left > 0 %}Starts in{% else %}Starts{% endif %}</p>
+                    <p class="confirm-days">
+                        {% if confirmation.days_left > 1 %}{{ confirmation.days_left }} days
+                        {% elif confirmation.days_left == 1 %}Tomorrow
+                        {% else %}Today{% endif %}
+                    </p>
+                    <p class="confirm-date">{{ confirmation.start_long }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% else %}
     <div class="enroll-grid fade-in">
         <section class="enroll-course">
             <img src="{{ course.image }}" alt="{{ course.title }} course">
@@ -23,10 +61,7 @@
             <p class="eyebrow">Enrollment</p>
             <h1>Enroll in {{ course.title }}</h1>
 
-            {% if enrolled_label %}
-            <p class="form-status" role="status">You're enrolled! Your {{ course.title }} course starts on {{ enrolled_label }}. We'll be in touch with next steps.</p>
-            <p><a href="{{ url_for('course') }}">&larr; Back to all courses</a></p>
-            {% elif not course.upcoming_intakes %}
+            {% if not course.upcoming_intakes %}
             <p>There are no upcoming start dates for this course right now. <a href="{{ url_for('contact', course=course.title) }}">Ask us</a> about the next one.</p>
             {% else %}
             <form action="{{ url_for('enroll', slug=course.slug) }}" method="POST" novalidate>
@@ -45,7 +80,7 @@
                                    {% if intake.full %}disabled{% endif %}
                                    {% if values.intake == intake.start or (not values.intake and intake == course.next_intake) %}checked{% endif %}>
                             <span class="intake-date">{{ intake.start | nice_date }}</span>
-                            <span class="intake-spots">{% if intake.full %}Full{% else %}{{ intake.spots_left }} of {{ intake.capacity }} {{ 'spot' if intake.spots_left == 1 else 'spots' }} left{% endif %}</span>
+                            <span class="intake-spots">{% if intake.full %}Full{% else %}Open{% endif %}</span>
                         </label>
                         {% endfor %}
                     </div>
@@ -69,4 +104,5 @@
             {% endif %}
         </section>
     </div>
+    {% endif %}
 {% endblock %}

@@ -4,90 +4,94 @@
 {% block description %}Learn practical, career-ready technology skills with Cyber Education.{% endblock %}
 
 {% block content %}
-    <section class="hero-centered fade-in">
-        <p class="hero-kicker">Your next chapter starts here</p>
-        <h1>Build skills for a digital future.</h1>
-        <p class="lead">
-            Cyber Education makes practical technology learning accessible. Study at your own pace, learn from industry professionals, and take the next step in your career.
-        </p>
-        <div class="hero-actions">
-            <a class="btn btn-primary" href="{{ url_for('course') }}">Explore our courses</a>
-            <a class="btn btn-outline-primary" href="{{ url_for('quiz') }}">Find my course</a>
-        </div>
-        <ul class="hero-stats">
-            <li><strong>{{ courses | length }}</strong><span>Career-ready courses</span></li>
-            <li><strong>100%</strong><span>Online learning</span></li>
-            <li><strong>12–18</strong><span>Weeks per course</span></li>
-            {% if rating_summary %}<li><strong>{{ rating_summary.average }}★</strong><span>Average learner rating</span></li>{% endif %}
-        </ul>
-        <img class="hero-banner" src="/static/Pictures/enhanced/Image%201.jpg" alt="A computer ready for learning and creative work" width="1160" height="420">
-    </section>
-
-    <section id="popular" class="reveal">
-        <div class="section-head">
-            <div>
-                <p class="eyebrow">Popular right now</p>
-                <h2>Start with a course people love</h2>
+    <section class="hero-centered hero-split fade-in">
+        <div class="hero-copy">
+            <p class="hero-kicker">Your next chapter starts here</p>
+            <h1>Build skills for a digital future.</h1>
+            <p class="lead">
+                Cyber Education makes practical technology learning accessible. Study at your own pace, learn from industry professionals, and take the next step in your career.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="{{ url_for('course') }}">Explore our courses</a>
+                <a class="btn btn-outline-primary" href="{{ url_for('quiz') }}">Find my course</a>
             </div>
-            <a class="section-head-link" href="{{ url_for('course') }}">View all {{ courses | length }} courses &rarr;</a>
         </div>
-        <div class="home-courses">
-            {% for item in popular %}
-            <article class="home-course">
-                <img src="{{ item.image }}" alt="{{ item.title }} course" loading="lazy">
-                <div class="home-course-body">
-                    {% if item.badge %}<span class="course-badge">{{ item.badge }}</span>{% endif %}
-                    <h3>{{ item.title }}</h3>
-                    <p class="home-course-meta">{{ item.duration_text }} · {{ item.delivery }}</p>
-                    <p class="course-description">{{ item.description }}</p>
-                    {% if item.next_intake %}
-                    <p class="course-intake">Next start <strong>{{ item.next_intake.start | nice_date }}</strong> · {{ item.next_intake.spots_left }} spots left</p>
-                    {% endif %}
-                    <a class="home-course-link" href="{{ url_for('course') }}#{{ item.slug }}">Learn more<span class="visually-hidden"> about {{ item.title }}</span> &rarr;</a>
-                </div>
-            </article>
-            {% endfor %}
+        <div class="hero-art">
+            <img class="hero-banner" src="/static/Pictures/enhanced/Image%201.jpg" alt="A laptop surrounded by charts and code, ready for learning" width="800" height="600">
+            {% if rating_summary %}<span class="hero-chip hero-chip--top">&#9733; {{ rating_summary.average }} learner rating</span>{% endif %}
         </div>
     </section>
 
     <section id="how-it-works" class="steps-section reveal">
-        <p class="eyebrow">How it works</p>
+        <p class="eyebrow">Why Cyber Education</p>
         <h2>From curious to qualified in three steps</h2>
+        <p class="steps-intro">A learning experience built around you, from choosing a course to earning your certificate.</p>
         <ol class="steps">
             <li class="step">
-                <span class="step-number" aria-hidden="true">1</span>
-                <h3>Find your course</h3>
-                <p>Browse all courses, compare two side by side, or take our 6-question quiz to get a recommendation.</p>
+                <span class="step-number" aria-hidden="true">01</span>
+                <h3>Find the right course</h3>
+                <p>Browse all {{ courses | length }} courses, compare two side by side, or take our 6-question quiz for a personal recommendation.</p>
                 <a href="{{ url_for('quiz') }}">Take the quiz &rarr;</a>
             </li>
             <li class="step">
-                <span class="step-number" aria-hidden="true">2</span>
-                <h3>Pick a start date</h3>
-                <p>Every course starts on the first day of each quarter (1 January, 1 April, 1 July and 1 October) with a limited number of spots. Choose the one that suits you and enroll online.</p>
-                <a href="{{ url_for('course') }}">See start dates &rarr;</a>
+                <span class="step-number" aria-hidden="true">02</span>
+                <h3>Learn when it suits you</h3>
+                <p>Study self-paced or with an instructor, and fit your course around work and life. Places are limited, so enroll early.</p>
+                <a href="{{ url_for('course') }}">Browse courses &rarr;</a>
             </li>
             <li class="step">
-                <span class="step-number" aria-hidden="true">3</span>
-                <h3>Learn and get certified</h3>
-                <p>Study online, self-paced or with an instructor, and receive a certificate when you complete your course.</p>
-                <a href="{{ url_for('faq') }}">Read the FAQ &rarr;</a>
+                <span class="step-number" aria-hidden="true">03</span>
+                <h3>Learn by doing, get certified</h3>
+                <p>Work through guided lessons and practical projects, then receive a certificate when you complete your course.</p>
+                <a href="{{ url_for('about') }}#lecturers">Meet our lecturers &rarr;</a>
             </li>
         </ol>
     </section>
 
-    <section id="platform" class="reveal">
-        <p class="eyebrow">Why Cyber Education</p>
-        <h2>A learning experience built around you</h2>
-        <p>Everything you need to move from curiosity to confident, job-ready skills.</p>
-        <div class="card-container">
-            <article class="card"><div class="card-body"><span class="feature-icon" aria-hidden="true">01</span><h3 class="card-title">Learn on your time</h3><p class="card-text">Flexible online courses let you fit learning around work and life.</p></div></article>
-            <article class="card"><div class="card-body"><span class="feature-icon" aria-hidden="true">02</span><h3 class="card-title">Learn by doing</h3><p class="card-text">Build practical knowledge with guided lessons and useful projects.</p></div></article>
-            <article class="card"><div class="card-body"><span class="feature-icon" aria-hidden="true">03</span><h3 class="card-title">Keep moving forward</h3><p class="card-text">Get career resources and a certificate when you complete your course.</p></div></article>
+    <section id="how-we-teach" class="split-section teach-section reveal">
+        <div class="teach-art">
+            <img src="/static/Pictures/how-we-teach.svg" alt="A self-paced video lesson on a laptop next to a live instructor-led class" width="600" height="450" loading="lazy">
+        </div>
+        <div>
+            <p class="eyebrow">How we teach</p>
+            <h2>Two ways to learn, one standard</h2>
+            <ul class="nav teach-switch" role="tablist" aria-label="Ways to learn">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="teach-tab-self" data-bs-toggle="pill" data-bs-target="#teach-self" type="button" role="tab" aria-controls="teach-self" aria-selected="true">Self-paced</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="teach-tab-instructor" data-bs-toggle="pill" data-bs-target="#teach-instructor" type="button" role="tab" aria-controls="teach-instructor" aria-selected="false">Instructor-paced</button>
+                    </li>
+            </ul>
+            <div class="tab-content teach-panel">
+                    <div class="tab-pane fade show active" id="teach-self" role="tabpanel" aria-labelledby="teach-tab-self" tabindex="0">
+                        <p>Study whenever it suits you and move through the material at your own speed.</p>
+                        <ul class="teach-list">
+                            <li>Learn on your own schedule</li>
+                            <li>Online lessons and assessments</li>
+                            <li>Certificate on completion</li>
+                        </ul>
+                        <div class="teach-chips">
+                            {% for item in courses if item.self_paced %}<a class="lecturer-chip" href="{{ url_for('course_detail', slug=item.slug) }}">{{ item.title }}</a>{% endfor %}
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="teach-instructor" role="tabpanel" aria-labelledby="teach-tab-instructor" tabindex="0">
+                        <p>Follow a lecturer's weekly schedule and learn alongside other students.</p>
+                        <ul class="teach-list">
+                            <li>Live guidance from your lecturer</li>
+                            <li>Learn with a class of peers</li>
+                            <li>Certificate on completion</li>
+                        </ul>
+                        <div class="teach-chips">
+                            {% for item in courses if not item.self_paced %}<a class="lecturer-chip" href="{{ url_for('course_detail', slug=item.slug) }}">{{ item.title }}</a>{% endfor %}
+                        </div>
+                    </div>
+            </div>
         </div>
     </section>
 
     <section class="split-section reveal">
-        <img src="/static/Pictures/enhanced/Image%20of%20students.jpg" alt="Students learning together" loading="lazy">
+        <img src="/static/Pictures/learn-together.svg" alt="A lecturer presenting a chart in a live online class while learners join from their laptops and ask questions" width="600" height="450" loading="lazy">
         <div>
             <p class="eyebrow">A community of learners</p>
             <h2>Learn with people who know the industry</h2>
@@ -99,6 +103,15 @@
             </ul>
             <a class="btn btn-primary" href="{{ url_for('about') }}">Meet the team</a>
         </div>
+    </section>
+
+    <!-- Loaded in the browser from the Node.js / Express API (server.js), which reads course-data.json.
+         Stays hidden if the Node server isn't running. -->
+    <section id="courses-glance" class="reveal" hidden>
+        <p class="eyebrow">Our courses at a glance</p>
+        <h2>Find your starting point</h2>
+        <p>Every course is online, practical and taught by an industry lecturer.</p>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-3 mt-2 text-start" id="courses-glance-list"></div>
     </section>
 
     {% if highlights %}
@@ -124,27 +137,63 @@
     </section>
     {% endif %}
 
-    <section class="home-faq reveal">
-        <div>
-            <p class="eyebrow">Good to know</p>
-            <h2>Questions? We've got answers.</h2>
-            <p>The questions learners ask us most, answered in one place.</p>
-            <a class="btn btn-outline-primary" href="{{ url_for('faq') }}">Visit the FAQ</a>
-        </div>
-        <ul class="home-faq-list">
-            <li><a href="{{ url_for('faq') }}#classes">When do the classes take place?</a></li>
-            <li><a href="{{ url_for('faq') }}#experience">Do I need experience before I start?</a></li>
-            <li><a href="{{ url_for('faq') }}#accreditation">Is this an accredited course?</a></li>
-            <li><a href="{{ url_for('faq') }}#discounts">Are there discounts for returning students?</a></li>
-        </ul>
-    </section>
-
     <section class="cta-band reveal">
         <h2>Ready to start learning?</h2>
-        <p>Find the course that fits your goals and secure your spot for the next start date.</p>
+        <p>Find the course that fits your goals and secure your spot.</p>
         <div class="hero-actions">
             <a class="btn btn-light" href="{{ url_for('course') }}">Browse courses</a>
             <a class="btn btn-outline-light" href="{{ url_for('contact') }}">Talk to us</a>
         </div>
     </section>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        // "Our courses at a glance": data comes from the Node.js server (GET /api/courses reads course-data.json).
+        (() => {
+            const API = '{{ node_api_url }}/api/courses';
+            const section = document.getElementById('courses-glance');
+            const list = document.getElementById('courses-glance-list');
+            const coursePage = slug => `{{ url_for('course_detail', slug='SLUG') }}`.replace('SLUG', encodeURIComponent(slug));
+
+            const el = (tag, className, text) => {
+                const node = document.createElement(tag);
+                if (className) node.className = className;
+                if (text !== undefined) node.textContent = text;
+                return node;
+            };
+
+            const card = course => {
+                const col = el('div', 'col');
+                const link = el('a', `glance-card${course.featured ? ' glance-card--featured' : ''}`);
+                link.href = coursePage(course.slug);
+                const img = el('img');
+                img.src = course.image;
+                img.alt = '';
+                img.loading = 'lazy';
+                const body = el('div', 'glance-card-body');
+                body.append(
+                    el('h3', 'glance-card-title', course.title),
+                    el('p', 'glance-card-meta', `${course.duration} · ${course.delivery}`),
+                    el('p', 'glance-card-lecturer', course.lecturer),
+                    el('span', 'glance-card-link', 'View course')
+                );
+                link.append(img, body);
+                col.append(link);
+                return col;
+            };
+
+            fetch(API)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(courses => {
+                    if (!Array.isArray(courses) || !courses.length) return;
+                    list.replaceChildren(...courses.map(card));
+                    section.hidden = false;
+                })
+                .catch(error => console.warn('Courses at a glance needs the Node.js server (npm start).', error));
+        })();
+    </script>
 {% endblock %}
