@@ -23,7 +23,7 @@ Built for **WST 262 (Web Systems and Technologies), Semester Project 3** by Wesa
 ### Pages
 | Page | URL | What it does |
 |------|-----|--------------|
-| Home | `/` | Hero, three steps, how we teach, learn with experts, learner reviews, call to action |
+| Home | `/` | Hero, three steps, how we teach, learn with experts, **courses at a glance (Node.js)**, learner reviews, call to action |
 | About us | `/about` | Mission and vision, values, team and lecturers |
 | Courses | `/courses` | Course cards loaded from the API, live filters, links to each course page |
 | Contact us | `/contact` | Contact details and an inquiry form handled by Flask |
@@ -43,7 +43,7 @@ Built for **WST 262 (Web Systems and Technologies), Semester Project 3** by Wesa
 
 ### API integration and dynamic content
 - **Flask API `GET /api/courses`**: returns courses as JSON, including the upcoming start dates and whether each is full. The Courses page fetches it with JavaScript, renders the cards, filters them as you type, and refreshes the data every 60 seconds **without reloading the page**.
-- **Node.js API `GET /api/courses`**: the Express server reads **`course-data.json`** and returns each course's title, duration, delivery and lecturer. Open <http://localhost:3000/api/courses> to see the JSON it returns.
+- **Node.js API `GET /api/courses`**: the Express server reads **`course-data.json`** and returns each course's title, duration, delivery and lecturer. The Home page's **"Our courses at a glance"** strip fetches this with JavaScript and builds the cards in the browser.
 - **Node.js API `GET/POST /api/feedback`**: reads and saves learner feedback in **`feedback.json`**. Try it at <http://localhost:3000/api/feedback>.
 - **Flask API `GET /api/testimonials`**: approved testimonials as JSON.
 
@@ -87,7 +87,7 @@ npm install
 npm start
 ```
 
-The API runs on <http://localhost:3000>. The website itself doesn't depend on it; the Flask app works on its own.
+The API runs on <http://localhost:3000>. Keep both servers running so the Home page can show "Our courses at a glance". If the Node server isn't running, the rest of the site still works and that strip is simply hidden.
 
 Optional settings (environment variables):
 
@@ -120,7 +120,7 @@ WST262_SS3_WesaniBaloyi/
 ├── Testimonial.js          Testimonials carousel and character counter
 ├── templates/              Jinja HTML templates (front end)
 │   ├── base.html           Shared layout: Bootstrap navbar, footer, scripts
-│   ├── Index.html          Home
+│   ├── Index.html          Home + courses at a glance (from the Node.js API)
 │   ├── About.html          About us
 │   ├── Course.html         Courses (cards and filters)
 │   ├── CourseDetail.html   One course: hero and tabs
@@ -139,7 +139,7 @@ WST262_SS3_WesaniBaloyi/
 ```
 Browser ──(page requests, form POST)──────► Flask (app.py, port 5000) ──► SQLite
 Browser ──(fetch GET /api/courses)────────► Flask ──► course-data.json + SQLite
-Any client ──(GET /api/courses)──────────► Node.js / Express (server.js, port 3000) ──► course-data.json
+Browser ──(fetch GET /api/courses)───────► Node.js / Express (server.js, port 3000) ──► course-data.json
 Any client ──(GET/POST /api/feedback)────► Node.js / Express (server.js, port 3000) ──► feedback.json
 ```
 
