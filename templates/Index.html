@@ -105,15 +105,6 @@
         </div>
     </section>
 
-    <!-- Loaded in the browser from the Node.js / Express API (server.js), which reads course-data.json.
-         Stays hidden if the Node server isn't running. -->
-    <section id="courses-glance" class="reveal" hidden>
-        <p class="eyebrow">Our courses at a glance</p>
-        <h2>Find your starting point</h2>
-        <p>Every course is online, practical and taught by an industry lecturer.</p>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-3 mt-2 text-start" id="courses-glance-list"></div>
-    </section>
-
     {% if highlights %}
     <section class="home-reviews reveal">
         <div class="section-head">
@@ -145,55 +136,4 @@
             <a class="btn btn-outline-light" href="{{ url_for('contact') }}">Talk to us</a>
         </div>
     </section>
-{% endblock %}
-
-{% block scripts %}
-    <script>
-        // "Our courses at a glance": data comes from the Node.js server (GET /api/courses reads course-data.json).
-        (() => {
-            const API = '{{ node_api_url }}/api/courses';
-            const section = document.getElementById('courses-glance');
-            const list = document.getElementById('courses-glance-list');
-            const coursePage = slug => `{{ url_for('course_detail', slug='SLUG') }}`.replace('SLUG', encodeURIComponent(slug));
-
-            const el = (tag, className, text) => {
-                const node = document.createElement(tag);
-                if (className) node.className = className;
-                if (text !== undefined) node.textContent = text;
-                return node;
-            };
-
-            const card = course => {
-                const col = el('div', 'col');
-                const link = el('a', `glance-card${course.featured ? ' glance-card--featured' : ''}`);
-                link.href = coursePage(course.slug);
-                const img = el('img');
-                img.src = course.image;
-                img.alt = '';
-                img.loading = 'lazy';
-                const body = el('div', 'glance-card-body');
-                body.append(
-                    el('h3', 'glance-card-title', course.title),
-                    el('p', 'glance-card-meta', `${course.duration} · ${course.delivery}`),
-                    el('p', 'glance-card-lecturer', course.lecturer),
-                    el('span', 'glance-card-link', 'View course')
-                );
-                link.append(img, body);
-                col.append(link);
-                return col;
-            };
-
-            fetch(API)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                    return response.json();
-                })
-                .then(courses => {
-                    if (!Array.isArray(courses) || !courses.length) return;
-                    list.replaceChildren(...courses.map(card));
-                    section.hidden = false;
-                })
-                .catch(error => console.warn('Courses at a glance needs the Node.js server (npm start).', error));
-        })();
-    </script>
 {% endblock %}
